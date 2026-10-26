@@ -274,6 +274,41 @@ def value_revisions(panel: pl.DataFrame, settings: Settings) -> pl.DataFrame:
     )
 
 
+def series_transitions(panel: pl.DataFrame, settings: Settings) -> pl.DataFrame:
+    """Series-level ledger for each consecutive transition.
+
+    Cells are (series, country, reference year) with a published value, restricted to
+    reference years eligible in the earlier release. Each cell is exactly one of
+    *retained*, *backfilled* (new in the later release) or *retracted* (gone from it);
+    retained cells whose value moved by more than ``revision_tolerance`` are *revised*.
+    This is the grain at which the synthetic generator plants events, so the two can be
+    compared exactly (see ``tests/test_ground_truth.py``).
+    """
+    keys = ["series_id", "country", "ref_year"]
+    tol = settings.revision_tolerance
+    rows = []
+    for before, after in _transitions(settings):
+        last = settings.eligibility.last_reference_year(before)
+
+        def cells(release: int, name: str, last: int = last) -> pl.DataFrame:
+            return panel.filter(
+                (pl.col("release") == release)
+                & pl.col("value").is_not_null()
+                & pl.col("ref_year").is_between(settings.reference_start, last)
+            ).select([*keys, pl.col("value").alias(name)])
+
+        joined = cells(before, "v0").join(cells(after, "v1"), on=keys, how="full", coalesce=True)
+        both = pl.col("v0").is_not_null() & pl.col("v1").is_not_null()
+        counts = joined.select(
+            _count(both).alias("retained"),
+            _count(pl.col("v0").is_null()).alias("backfilled"),
+            _count(pl.col("v1").is_null()).alias("retracted"),
+            _count(both & ((pl.col("v1") - pl.col("v0")).abs() > tol)).alias("revised"),
+        ).row(0, named=True)
+        rows.append({"from_release": before, "to_release": after, **counts})
+    return pl.DataFrame(rows).cast({"from_release": pl.Int16, "to_release": pl.Int16})
+
+
 # --------------------------------------------------------------------------- matrices
 
 

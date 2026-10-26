@@ -40,16 +40,20 @@ are used, so aggregate rows are ignored.
 
 ## Synthetic generator
 
-`sdg4v demo` writes four releases for 60 placeholder countries and 8 series, with:
+`sdg4v demo` writes four releases for 60 placeholder countries (`AAX`, `ABX`, …) and
+12 series across 7 indicators. The generator is deterministic for a given seed and
+returns a ledger of every event it planted:
 
 | Mechanism | How it is planted |
 |---|---|
 | Reporting propensity | each country reports a year with its own probability |
-| Publication lag | a year first appears 1–3 releases later |
-| Backfill | 15 % of values arrive one release late |
-| Retraction | 2 % of published cells disappear in the next release |
-| Revision | 15 % of carried-over values change in the next release |
+| Publication lag | a value first appears 1–3 releases after its reference year |
+| Backfill | 15 % of values miss their first eligible release and arrive later |
+| Retraction | 2 % of carried-over cells are withdrawn, permanently |
+| Revision | 15 % of carried-over values move by 0.05–1.5 units |
+| Method change | modelled series exist only from the 2023 release |
 | Schema drift | header case alternates between releases |
 | Noise | distractor series the taxonomy must ignore |
 
-`tests/test_pipeline.py` checks that the pipeline recovers each of these effects.
+`tests/test_ground_truth.py` checks, for several seeds, that the pipeline recovers the
+planted backfills, retractions and revisions **exactly**.

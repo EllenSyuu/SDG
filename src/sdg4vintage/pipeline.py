@@ -14,6 +14,7 @@ from sdg4vintage.config import Settings
 from sdg4vintage.taxonomy import Taxonomy, load_taxonomy
 
 HEADLINE_CODES = ["4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.c.1", "1.a.2"]
+HERO_CODE = "4.c.1"
 
 
 @dataclass
@@ -39,6 +40,7 @@ def compute_tables(
         tables["transition_flows"] = flows
         tables["transition_summary"] = analysis.transition_summary(flows)
         tables["value_revisions"] = analysis.value_revisions(panel, settings)
+        tables["series_transitions"] = analysis.series_transitions(panel, settings)
     return tables
 
 
@@ -69,29 +71,41 @@ def run(settings: Settings, taxonomy: Taxonomy | None = None, figures: bool = Tr
 
 
 def make_figures(
-    tables: dict[str, pl.DataFrame], taxonomy: Taxonomy, settings: Settings
+    tables: dict[str, pl.DataFrame],
+    taxonomy: Taxonomy,
+    settings: Settings,
+    theme: str = "light",
+    suffix: str = "",
 ) -> dict[str, Path]:
+    """Render every figure in one theme; ``suffix`` is appended to file stems."""
+    plots.set_theme(theme)
     out = settings.paths.figures_dir
     out.mkdir(parents=True, exist_ok=True)
     names = {i.code: i.name for i in taxonomy.indicators}
     present = set(tables["vintage_curves"]["code"].unique().to_list())
     headline = [c for c in HEADLINE_CODES if c in present] or sorted(present)
     ordered = [c for c in taxonomy.codes if c in present]
+    hero_code = HERO_CODE if HERO_CODE in present else headline[0]
     figures = {
+        "hero": plots.hero(tables["vintage_curves"], names, hero_code, out / f"hero{suffix}.png"),
         "vintage_curves": plots.vintage_curves(
-            tables["vintage_curves"], names, headline, out / "vintage_curves.png"
+            tables["vintage_curves"], names, headline, out / f"vintage_curves{suffix}.png"
         ),
         "source_layers": plots.source_layers(
-            tables["source_layers"], names, max(settings.release_years), out / "source_layers.png"
+            tables["source_layers"],
+            names,
+            max(settings.release_years),
+            out / f"source_layers{suffix}.png",
         ),
     }
     if "transition_flows" in tables:
         figures["transition_flows"] = plots.transition_heatmap(
-            tables["transition_flows"], names, ordered, out / "transition_flows.png"
+            tables["transition_flows"], names, ordered, out / f"transition_flows{suffix}.png"
         )
         figures["value_revisions"] = plots.value_revisions(
-            tables["value_revisions"], names, ordered, out / "value_revisions.png"
+            tables["value_revisions"], names, ordered, out / f"value_revisions{suffix}.png"
         )
+    plots.set_theme("light")
     return figures
 
 

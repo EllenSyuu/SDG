@@ -1,11 +1,11 @@
-.PHONY: install lint typecheck test check demo explorer clean
+.PHONY: install lint typecheck test check demo assets explorer clean
 
 install:        ## editable install with dev tools
 	python -m pip install -e ".[dev]"
 
 lint:
-	ruff check src tests
-	ruff format --check src tests
+	ruff check src tests scripts
+	ruff format --check src tests scripts
 
 typecheck:
 	python -m mypy
@@ -17,6 +17,9 @@ check: lint typecheck test   ## everything CI runs
 
 demo:           ## synthetic end-to-end run -> build/demo
 	sdg4v demo
+
+assets:         ## re-render docs/img (light + dark) from synthetic data
+	python scripts/render_assets.py
 
 explorer: demo  ## build the explorer payload from the demo and serve it
 	sdg4v explorer --out build/demo/explorer/data.json

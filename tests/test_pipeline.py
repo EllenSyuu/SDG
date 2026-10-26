@@ -15,7 +15,7 @@ def test_full_run(synthetic_settings: Settings, tmp_path: Path) -> None:
     for path in result.figures.values():
         assert path.stat().st_size > 10_000  # a rendered PNG, not an empty file
     summary = json.loads((synthetic_settings.paths.tables_dir / "summary.json").read_text())
-    assert summary["indicators"] == 4
+    assert summary["indicators"] == 7
     # The generator plants backfills, retractions and revisions; all must be detected.
     assert summary["coverage_revisions"]["added"] > 0
     assert summary["coverage_revisions"]["dropped"] > 0
@@ -23,4 +23,4 @@ def test_full_run(synthetic_settings: Settings, tmp_path: Path) -> None:
 
     payload = json.loads(export(synthetic_settings, tmp_path / "data.json").read_text())
     assert payload["releases"] == [2022, 2023, 2024, 2025]
-    assert set(payload["masks"]) == {"4.1.2", "4.1.3", "4.1.4", "FFA"}
+    assert set(payload["masks"]) == {"4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.c.1", "1.a.2", "FFA"}

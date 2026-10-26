@@ -25,11 +25,12 @@ flowchart LR
 | `taxonomy.py` | Series → (indicator, source) | Ordered full-match regex rules; ambiguity raises. |
 | `io.py` | Release files → panel; population | Lazy Polars scans, filtered by a join on the taxonomy's series before materialising. `validate_panel` guards schema, key uniqueness, nulls and code shape. |
 | `analysis.py` | All metrics | Pure functions, panel in / tidy frame out; no I/O, no globals. |
-| `synthetic.py` | Ground-truth data generator | Exact file layout, planted lags, backfills, retractions, revisions, header drift and distractor series. |
+| `synthetic.py` | Ground-truth data generator | Exact file layout; planted lags, backfills, retractions, revisions, a method change, header drift and distractor series; returns a ledger of every planted event. |
 | `pipeline.py` | Orchestration | One call: panel → tables → figures → `summary.json`. |
-| `plots.py` | Static figures | Colour by role: sequential for ordered releases, diverging with a neutral midpoint for net change, three fixed categorical slots for sources. Title blocks are laid out in inches so they never collide with content. |
+| `plots.py` | Static figures, light and dark themes | Colour by role: sequential for ordered releases, diverging with a neutral midpoint for net change, three fixed categorical slots for sources. Title blocks are laid out in inches so they never collide with content. |
 | `explorer.py` | Data for the web explorer | Country × year presence as integer bitmasks. |
 | `cli.py` | `sdg4v` entry point | `run`, `demo`, `explorer`. |
+| `scripts/render_assets.py` | README images | Re-renders every image in `docs/img` from synthetic data, in both themes. |
 
 ## Design decisions
 
@@ -51,4 +52,5 @@ flowchart LR
 | Property | `expanding ≥ any single year`, `rolling ≥ point-in-time`, `old + added − dropped = new` on random panels (Hypothesis) | `tests/test_analysis.py` |
 | Contract | Schema, duplicate keys, malformed headers, missing files, Parquet round trip | `tests/test_io.py` |
 | Taxonomy | Known series, near misses, ambiguity | `tests/test_taxonomy.py` |
-| End to end | Synthetic releases → all tables, figures, explorer payload; planted effects detected | `tests/test_pipeline.py` |
+| Ground truth | Series-level backfills, retractions and revisions equal the generator's ledger exactly, for several seeds; method change visible | `tests/test_ground_truth.py` |
+| End to end | Synthetic releases → all tables, figures, explorer payload | `tests/test_pipeline.py` |

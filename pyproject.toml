@@ -44,7 +44,11 @@ dev = [
 sdg4v = "sdg4vintage.cli:app"
 
 [project.urls]
+Homepage = "https://github.com/EllenSyuu/SDG"
 Repository = "https://github.com/EllenSyuu/SDG"
+Documentation = "https://github.com/EllenSyuu/SDG/tree/main/docs"
+Changelog = "https://github.com/EllenSyuu/SDG/blob/main/CHANGELOG.md"
+Issues = "https://github.com/EllenSyuu/SDG/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/sdg4vintage"]
@@ -69,7 +73,7 @@ ignore = ["PLR0913", "PLR2004", "RUF001", "RUF002"]
 [tool.mypy]
 strict = true
 warn_unused_ignores = true
-files = ["src"]
+files = ["src", "scripts"]
 
 [[tool.mypy.overrides]]
 module = ["matplotlib.*"]

@@ -5,6 +5,11 @@ type: software
 authors:
   - family-names: Zhou
     given-names: Ziyi
+abstract: >-
+  A typed, tested Python pipeline that treats each release of an SDG 4 education
+  database as a data vintage and measures what changes between releases:
+  reporting lag, backfill, withdrawals and value revisions. Validated against a
+  deterministic synthetic generator with a planted ground truth.
 version: 0.1.0
 date-released: 2026-10-26
 license: MIT

@@ -24,14 +24,16 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - name: Lint
         run: |
-          ruff check src tests
-          ruff format --check src tests
+          ruff check src tests scripts
+          ruff format --check src tests scripts
       - name: Type-check
         run: python -m mypy
       - name: Test (synthetic data; real-data tests skip)
         run: python -m pytest --cov --cov-report=term-missing
       - name: End-to-end demo
         run: sdg4v demo
+      - name: README assets render
+        run: python scripts/render_assets.py
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.13'
         with:
