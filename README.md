@@ -21,7 +21,7 @@ reporting lag, late-arriving data, withdrawn values and revised values.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/hero-dark.gif">
-  <img alt="Animation: four releases of the same indicator drawn one on top of another; each later release lifts earlier years and extends one year further" src="docs/img/hero-light.gif">
+  <img alt="Animation: four releases of the same indicator drawn one on top of another; each later release lifts earlier years and extends one year further" src="docs/img/hero-light.gif" width="100%">
 </picture>
 
 <sub>All figures in this repository are generated from **synthetic data** by `sdg4-revisions demo`. The repository contains no real data.</sub>
@@ -50,14 +50,9 @@ with GitHub Pages.
 <a href="https://ellensyuu.github.io/SDG/">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/explorer-dark.png">
-  <img alt="Screenshot of the interactive explorer: vintage curves with a hover tooltip comparing four releases, and a bar chart of one reference year across releases" src="docs/img/explorer-light.png">
+  <img alt="Screenshot of the interactive explorer: vintage curves with a hover tooltip comparing four releases, and a bar chart of one reference year across releases" src="docs/img/explorer-light.png" width="100%">
 </picture>
 </a>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/hero-dark.png">
-  <img alt="Static version: vintage curves for one indicator, and how one reference year's count grows from release to release" src="docs/img/hero-light.png">
-</picture>
 
 ## Quick start
 
@@ -87,30 +82,18 @@ window, eligibility rule, lookback length, revision tolerance) lives in
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/vintage_curves-dark.png">
-  <img alt="Vintage curves for six indicators" src="docs/img/vintage_curves-light.png">
+  <img alt="Vintage curves for six indicators: one line per release, with the most recent years filling in as later releases arrive" src="docs/img/vintage_curves-light.png" width="100%">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/transition_flows-dark.png">
-  <img alt="Net country-years added or withdrawn between consecutive releases, by indicator and reference year" src="docs/img/transition_flows-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/flow_bars-dark.png">
+  <img alt="Country-years filled in late and withdrawn, per indicator, for each release transition" src="docs/img/flow_bars-light.png" width="100%">
 </picture>
 
-<table>
-<tr>
-<td width="50%">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/value_revisions-dark.png">
-  <img alt="Share of published values revised in the next release" src="docs/img/value_revisions-light.png">
+  <img alt="Share of published values revised in the next release, per indicator and release transition" src="docs/img/value_revisions-light.png" width="100%">
 </picture>
-</td>
-<td width="50%">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/source_layers-dark.png">
-  <img alt="Countries covered by administrative data, surveys and models" src="docs/img/source_layers-light.png">
-</picture>
-</td>
-</tr>
-</table>
 
 Exact definitions, design choices and limitations: [docs/methodology.md](docs/methodology.md).
 
@@ -132,7 +115,7 @@ drift and distractor series) and records each planted event in a ledger.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/img/ground_truth-dark.png">
-  <img alt="Planted versus recovered event counts per release transition" src="docs/img/ground_truth-light.png">
+  <img alt="Planted versus recovered event counts per release transition" src="docs/img/ground_truth-light.png" width="100%">
 </picture>
 
 ## Engineering

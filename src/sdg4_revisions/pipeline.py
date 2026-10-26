@@ -102,6 +102,9 @@ def make_figures(
         figures["transition_flows"] = plots.transition_heatmap(
             tables["transition_flows"], names, ordered, out / f"transition_flows{suffix}.png"
         )
+        figures["flow_bars"] = plots.flow_bars(
+            tables["transition_summary"], names, ordered, out / f"flow_bars{suffix}.png"
+        )
         figures["value_revisions"] = plots.value_revisions(
             tables["value_revisions"], names, ordered, out / f"value_revisions{suffix}.png"
         )

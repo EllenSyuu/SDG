@@ -13,6 +13,9 @@ All notable changes to this project are documented here. The format follows
 - CI actions updated to current major versions; Dependabot removed to keep a single branch.
 
 ### Added
+- Figures redesigned for README reading width: 10-inch layouts, 11–19 pt type, stacked
+  panels, constrained layout; new per-indicator "what each release changed" chart with
+  clipped outliers; every README image shown full width.
 - Redesigned interactive explorer: indicator switcher, vintage curves with a release-by-
   release hover readout, one-year drift chart, release scrubber on the country × year
   matrix, net-change heat strip, revision dot plot and an in-browser ground-truth check.
