@@ -13,10 +13,11 @@ ink tokens, never a series colour.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+import io
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, BinaryIO, cast
 
 import matplotlib
 
@@ -24,13 +25,13 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
-from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.artist import Artist
 from matplotlib.axes import Axes
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from matplotlib.patches import Patch
+from PIL import Image
 
 WIDTH = 10.0  # inches; displayed at ~880 px in a README column
 
@@ -187,11 +188,26 @@ def _legend(fig: Figure, handles: Sequence[Artist], ncols: int) -> None:
     )
 
 
-def _save(fig: Figure, out: Path) -> Path:
-    out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out)
+def _save(fig: Figure, out: Path | BinaryIO, dpi: float | None = None) -> Path:
+    if isinstance(out, Path):
+        out.parent.mkdir(parents=True, exist_ok=True)
+    if dpi is None:
+        fig.savefig(out, format="png")
+    else:
+        fig.savefig(out, dpi=dpi, format="png")
     plt.close(fig)
-    return out
+    return out if isinstance(out, Path) else Path()
+
+
+def _ease(x: float) -> float:
+    """Ease-out cubic on [0, 1]."""
+    x = min(1.0, max(0.0, x))
+    return 1 - (1 - x) ** 3
+
+
+def _stage(progress: float, k: int, n: int) -> float:
+    """Progress of the k-th of n sequential stages, eased."""
+    return _ease(progress * n - k)
 
 
 def _label(code: str, names: dict[str, str]) -> str:
@@ -199,21 +215,32 @@ def _label(code: str, names: dict[str, str]) -> str:
 
 
 def _release_lines(
-    ax: Axes, panel: pl.DataFrame, releases: list[int], colors: dict[int, str], lw: float = 2.2
+    ax: Axes,
+    panel: pl.DataFrame,
+    releases: list[int],
+    colors: dict[int, str],
+    *,
+    lw: float = 2.2,
+    progress: float = 1.0,
 ) -> None:
+    """One line per release; with ``progress`` < 1 releases are drawn in one at a time."""
     t = _theme
-    for release in releases:
+    for k, release in enumerate(releases):
         line = panel.filter(pl.col("release") == release).sort("ref_year")
-        if line.is_empty():
+        frac = _stage(progress, k, len(releases)) if progress < 1 else 1.0
+        if line.is_empty() or frac <= 0:
             continue
+        n = max(2, round(frac * line.height))
         latest = release == releases[-1]
         ax.plot(
-            line["ref_year"],
-            line["n_countries"],
+            line["ref_year"][:n],
+            line["n_countries"][:n],
             color=colors[release],
             lw=lw + 0.8 if latest else lw,
             zorder=3 if latest else 2,
         )
+        if frac < 1:
+            continue
         ax.scatter(
             line["ref_year"][-1],
             line["n_countries"][-1],
@@ -298,7 +325,11 @@ def hero(curves: pl.DataFrame, names: dict[str, str], code: str, out: Path) -> P
 
 
 def vintage_curves(
-    curves: pl.DataFrame, names: dict[str, str], codes: list[str], out: Path
+    curves: pl.DataFrame,
+    names: dict[str, str],
+    codes: list[str],
+    out: Path | BinaryIO,
+    progress: float = 1.0,
 ) -> Path:
     releases = sorted(curves["release"].unique().to_list())
     colors = dict(zip(releases, _ramp(len(releases)), strict=True))
@@ -312,9 +343,11 @@ def vintage_curves(
     _legend(fig, _release_handles(releases, colors), len(releases))
     axes = fig.subplots(nrows, 2, sharex=True, squeeze=False)
     for ax, code in zip(axes.ravel(), codes, strict=False):
-        _release_lines(ax, curves.filter(pl.col("code") == code), releases, colors, lw=1.9)
+        panel = curves.filter(pl.col("code") == code)
+        _release_lines(ax, panel, releases, colors, lw=1.9, progress=progress)
         ax.set_title(_label(code, names), fontsize=12.5)
-        ax.set_ylim(bottom=0)
+        ax.set_xlim(curves["ref_year"].min() - 0.5, curves["ref_year"].max() + 0.5)  # type: ignore[operator]
+        ax.set_ylim(0, max([1, *panel["n_countries"].to_list()]) * 1.1)
     for ax in axes.ravel()[len(codes) :]:
         ax.set_visible(False)
     fig.supxlabel("Reference year", color=_theme.ink_2, fontsize=12)
@@ -377,7 +410,13 @@ def transition_heatmap(
     return _save(fig, out)
 
 
-def flow_bars(summary: pl.DataFrame, names: dict[str, str], codes: list[str], out: Path) -> Path:
+def flow_bars(
+    summary: pl.DataFrame,
+    names: dict[str, str],
+    codes: list[str],
+    out: Path | BinaryIO,
+    progress: float = 1.0,
+) -> Path:
     """Country-years backfilled (right) and withdrawn (left), per indicator and transition."""
     t = _theme
     transitions = summary.select("from_release", "to_release").unique().sort("from_release").rows()
@@ -406,9 +445,12 @@ def flow_bars(summary: pl.DataFrame, names: dict[str, str], codes: list[str], ou
         dropped = dict(part.select("code", "dropped").iter_rows())
         a = np.array([added.get(c, 0) for c in codes], dtype=float)
         d = np.array([dropped.get(c, 0) for c in codes], dtype=float)
-        ax.barh(y, np.minimum(a, cap), color=t.series[0], height=0.62)
-        ax.barh(y, -np.minimum(d, cap), color=t.series[1], height=0.62)
+        grow = _stage(progress, k, len(transitions))
+        ax.barh(y, np.minimum(a, cap) * grow, color=t.series[0], height=0.62)
+        ax.barh(y, -np.minimum(d, cap) * grow, color=t.series[1], height=0.62)
         for yi, (av, dv) in enumerate(zip(a, d, strict=True)):
+            if grow < 1:
+                continue
             if av:
                 clipped = av > cap
                 ax.text(
@@ -444,7 +486,11 @@ def flow_bars(summary: pl.DataFrame, names: dict[str, str], codes: list[str], ou
 
 
 def value_revisions(
-    revisions: pl.DataFrame, names: dict[str, str], codes: list[str], out: Path
+    revisions: pl.DataFrame,
+    names: dict[str, str],
+    codes: list[str],
+    out: Path | BinaryIO,
+    progress: float = 1.0,
 ) -> Path:
     t = _theme
     transitions = (
@@ -469,17 +515,29 @@ def value_revisions(
         (code, a): 100 * s
         for code, a, s in revisions.select("code", "from_release", "share_revised").iter_rows()
     }
+    values = [v for v in shares.values() if np.isfinite(v)]
+    lo = max(0.0, np.floor(min(values)) - 2)
+    shown = [
+        (slot, before)
+        for slot, (before, _) in enumerate(transitions)
+        if _stage(progress, slot, len(transitions)) > 0
+    ]
     for i, code in enumerate(codes):
-        xs = [shares[(code, a)] for a, _ in transitions if (code, a) in shares]
+        xs = [
+            shares[(code, a)]
+            for slot, a in shown
+            if (code, a) in shares and _stage(progress, slot, len(transitions)) >= 1
+        ]
         if len(xs) > 1:
             ax.plot(
                 [min(xs), max(xs)], [i, i], color=t.grid, lw=5, solid_capstyle="round", zorder=1
             )
-    for slot, (before, _) in enumerate(transitions):
+    for slot, before in shown:
+        move = _stage(progress, slot, len(transitions))
         ax.scatter(
             [shares.get((c, before), np.nan) for c in codes],
             y,
-            s=90,
+            s=90 * move,
             color=colors[slot],
             edgecolor=t.surface,
             linewidth=2,
@@ -487,8 +545,7 @@ def value_revisions(
         )
     ax.set_yticks(y, [_label(c, names) for c in codes])
     ax.invert_yaxis()
-    values = [v for v in shares.values() if np.isfinite(v)]
-    ax.set_xlim(max(0.0, np.floor(min(values)) - 2), np.ceil(max(values)) + 2)
+    ax.set_xlim(lo, np.ceil(max(values)) + 2)
     ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(decimals=0))
     ax.grid(axis="x", visible=True)
     ax.grid(axis="y", visible=False)
@@ -556,7 +613,9 @@ def source_layers(layers: pl.DataFrame, names: dict[str, str], release: int, out
     return _save(fig, out)
 
 
-def ground_truth(measured: pl.DataFrame, planted: pl.DataFrame, out: Path) -> Path:
+def ground_truth(
+    measured: pl.DataFrame, planted: pl.DataFrame, out: Path | BinaryIO, progress: float = 1.0
+) -> Path:
     """Planted vs recovered series-level events, per release transition."""
     t = _theme
     kinds = [("backfilled", "Backfilled"), ("retracted", "Withdrawn"), ("revised", "Revised")]
@@ -589,10 +648,15 @@ def ground_truth(measured: pl.DataFrame, planted: pl.DataFrame, out: Path) -> Pa
     for slot, (ax, (kind, title)) in enumerate(zip(axes, kinds, strict=True)):
         truth = planted[kind].to_numpy()
         got = measured[kind].to_numpy()
-        ax.bar(x, truth, width=0.62, color=t.series[slot], alpha=0.3)
+        rise = _stage(progress, 0, 2)  # first half: planted bars rise
+        drop = [_stage(progress, 1, 2) * len(x) - j for j in range(len(x))]  # then diamonds
+        ax.bar(x, truth * rise, width=0.62, color=t.series[slot], alpha=0.3)
+        landed = np.array([_ease(v) for v in drop])
+        top = max(truth.max(), got.max()) * 1.3 + 1
+        visible = landed > 0
         ax.scatter(
-            x,
-            got,
+            x[visible],
+            (top - (top - got) * landed)[visible],
             s=90,
             marker="D",
             color=t.series[slot],
@@ -600,7 +664,9 @@ def ground_truth(measured: pl.DataFrame, planted: pl.DataFrame, out: Path) -> Pa
             linewidth=1.8,
             zorder=3,
         )
-        for xi, value in zip(x, got, strict=True):
+        for xi, value, done in zip(x, got, landed, strict=True):
+            if done < 1:
+                continue
             ax.annotate(
                 f"{int(value):,}",
                 (xi, value),
@@ -616,7 +682,7 @@ def ground_truth(measured: pl.DataFrame, planted: pl.DataFrame, out: Path) -> Pa
         ax.set_title(title)
         ax.set_yticks([])
         ax.grid(False)
-        ax.set_ylim(0, max(truth.max(), got.max()) * 1.3 + 1)
+        ax.set_ylim(0, top)
     return _save(fig, out)
 
 
@@ -662,15 +728,17 @@ def social_card(curves: pl.DataFrame, code: str, out: Path) -> Path:
     return out
 
 
-def hero_animation(curves: pl.DataFrame, names: dict[str, str], code: str, out: Path) -> Path:
-    """Animated GIF: releases are layered on one at a time, then the stack holds."""
+def hero_frame(
+    curves: pl.DataFrame,
+    names: dict[str, str],
+    code: str,
+    out: Path | BinaryIO,
+    progress: float = 1.0,
+) -> Path:
+    """Single-indicator vintage curves, one release drawn after another."""
     panel = curves.filter(pl.col("code") == code)
     releases = sorted(panel["release"].unique().to_list())
     colors = dict(zip(releases, _ramp(len(releases)), strict=True))
-    lines = {
-        r: panel.filter(pl.col("release") == r).sort("ref_year").select("ref_year", "n_countries")
-        for r in releases
-    }
     fig = _figure(
         5.4,
         "Every release rewrites the past",
@@ -679,43 +747,52 @@ def hero_animation(curves: pl.DataFrame, names: dict[str, str], code: str, out: 
     )
     _legend(fig, _release_handles(releases, colors), len(releases))
     ax = fig.subplots()
-    ymax = max([1, *panel["n_countries"].to_list()]) * 1.12
+    _release_lines(ax, panel, releases, colors, lw=2.4, progress=progress)
     years = panel["ref_year"].to_list()
-    steps = 14  # frames to draw one release
-    hold = 20
+    ax.set_xlim(min(years) - 0.4, max(years) + 0.4)
+    ax.set_ylim(0, max([1, *panel["n_countries"].to_list()]) * 1.12)
+    ax.set_xlabel("Reference year")
+    ax.set_ylabel("Countries with a value")
+    return _save(fig, out)
 
-    def frame(i: int) -> None:
-        ax.clear()
-        ax.set_xlim(min(years) - 0.4, max(years) + 0.4)
-        ax.set_ylim(0, ymax)
-        ax.set_xlabel("Reference year")
-        ax.set_ylabel("Countries with a value")
-        shown = min(len(releases), i // steps + 1)
-        for k, r in enumerate(releases[:shown]):
-            data = lines[r]
-            frac = 1.0 if k < shown - 1 else min(1.0, (i % steps + 1) / steps)
-            n = max(2, round(frac * data.height))
-            latest = k == shown - 1
-            ax.plot(
-                data["ref_year"][:n],
-                data["n_countries"][:n],
-                color=colors[r],
-                lw=3.2 if latest else 2.2,
-            )
-            if n == data.height:
-                ax.scatter(
-                    data["ref_year"][-1],
-                    data["n_countries"][-1],
-                    s=46,
-                    color=colors[r],
-                    edgecolor=_theme.surface,
-                    linewidth=1.8,
-                    zorder=3,
-                )
 
-    total = steps * len(releases) + hold
-    anim = FuncAnimation(fig, lambda i: frame(min(i, steps * len(releases) - 1)), frames=total)
+def hero_animation(curves: pl.DataFrame, names: dict[str, str], code: str, out: Path) -> Path:
+    """Animated GIF: releases are layered on one at a time, then the stack holds."""
+    return animate(lambda buf, p: hero_frame(curves, names, code, buf, progress=p), out, frames=56)
+
+
+def animate(
+    render: Callable[[BinaryIO, float], object],
+    out: Path,
+    *,
+    frames: int = 44,
+    frame_ms: int = 55,
+    hold_ms: int = 3200,
+    dpi: float = 150,
+) -> Path:
+    """Render ``render(buffer, progress)`` for progress 0..1 and write an optimised GIF.
+
+    The last frame is held so the finished chart stays on screen before the loop restarts.
+    Frames are quantised to a shared adaptive palette to keep files small.
+    """
+    images = []
+    for i in range(frames):
+        buffer = io.BytesIO()
+        with plt.rc_context({"savefig.dpi": dpi}):
+            render(buffer, (i + 1) / frames)
+        buffer.seek(0)
+        images.append(Image.open(buffer).convert("RGB"))
+    palette = images[-1].quantize(colors=128, method=Image.Quantize.MEDIANCUT)
+    frames_p = [img.quantize(palette=palette, dither=Image.Dither.NONE) for img in images]
+    durations = [frame_ms] * (frames - 1) + [hold_ms]
     out.parent.mkdir(parents=True, exist_ok=True)
-    anim.save(out, writer=PillowWriter(fps=16), dpi=100)
-    plt.close(fig)
+    frames_p[0].save(
+        out,
+        save_all=True,
+        append_images=frames_p[1:],
+        duration=durations,
+        loop=0,
+        optimize=True,
+        disposal=1,
+    )
     return out

@@ -24,7 +24,7 @@ reporting lag, late-arriving data, withdrawn values and revised values.
   <img alt="Animation: four releases of the same indicator drawn one on top of another; each later release lifts earlier years and extends one year further" src="docs/img/hero-light.gif" width="100%">
 </picture>
 
-<sub>All figures in this repository are generated from **synthetic data** by `sdg4-revisions demo`. The repository contains no real data.</sub>
+<sub>All figures and animations in this repository are generated from **synthetic data** by `sdg4-revisions demo`. The repository contains no real data.</sub>
 
 ## Why
 
@@ -81,18 +81,18 @@ window, eligibility rule, lookback length, revision tolerance) lives in
 | **Value revisions** | How often, and by how much, do published values change in the next release? |
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/vintage_curves-dark.png">
-  <img alt="Vintage curves for six indicators: one line per release, with the most recent years filling in as later releases arrive" src="docs/img/vintage_curves-light.png" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/vintage_curves-dark.gif">
+  <img alt="Vintage curves for six indicators: one line per release, with the most recent years filling in as later releases arrive" src="docs/img/vintage_curves-light.gif" width="100%">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/flow_bars-dark.png">
-  <img alt="Country-years filled in late and withdrawn, per indicator, for each release transition" src="docs/img/flow_bars-light.png" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/flow_bars-dark.gif">
+  <img alt="Country-years filled in late and withdrawn, per indicator, for each release transition" src="docs/img/flow_bars-light.gif" width="100%">
 </picture>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/value_revisions-dark.png">
-  <img alt="Share of published values revised in the next release, per indicator and release transition" src="docs/img/value_revisions-light.png" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/value_revisions-dark.gif">
+  <img alt="Share of published values revised in the next release, per indicator and release transition" src="docs/img/value_revisions-light.gif" width="100%">
 </picture>
 
 Exact definitions, design choices and limitations: [docs/methodology.md](docs/methodology.md).
@@ -114,8 +114,8 @@ drift and distractor series) and records each planted event in a ledger.
 <sub>Seed 42, 60 placeholder countries, 12 series. Planted and recovered counts are identical in every cell.</sub>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/ground_truth-dark.png">
-  <img alt="Planted versus recovered event counts per release transition" src="docs/img/ground_truth-light.png" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/ground_truth-dark.gif">
+  <img alt="Planted versus recovered event counts per release transition" src="docs/img/ground_truth-light.gif" width="100%">
 </picture>
 
 ## Engineering

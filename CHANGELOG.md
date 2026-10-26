@@ -13,6 +13,11 @@ All notable changes to this project are documented here. The format follows
 - CI actions updated to current major versions; Dependabot removed to keep a single branch.
 
 ### Added
+- Every README figure is now an animated GIF (light and dark): releases draw in one
+  after another, bars grow per transition, revision dots appear per transition, and the
+  ground-truth check drops recovered counts onto the planted bars. Static PNGs are kept
+  alongside. Shared `plots.animate` renders any figure at a given progress and writes an
+  optimised, palette-quantised GIF that holds on the finished chart.
 - Figures redesigned for README reading width: 10-inch layouts, 11–19 pt type, stacked
   panels, constrained layout; new per-indicator "what each release changed" chart with
   clipped outliers; every README image shown full width.

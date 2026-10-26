@@ -22,6 +22,32 @@ ROOT = Path(__file__).resolve().parents[1]
 IMG = ROOT / "docs" / "img"
 
 
+def animate_figures(
+    tables: dict[str, pl.DataFrame], planted: pl.DataFrame, names: dict[str, str], theme: str
+) -> None:
+    """Animated GIF companions of the README figures (same layout as the PNGs)."""
+    present = set(tables["vintage_curves"]["code"].unique().to_list())
+    headline = [c for c in pipeline.HEADLINE_CODES if c in present]
+    ordered = [c for c in names if c in present]
+    jobs = {
+        "vintage_curves": lambda buf, p: plots.vintage_curves(
+            tables["vintage_curves"], names, headline, buf, progress=p
+        ),
+        "flow_bars": lambda buf, p: plots.flow_bars(
+            tables["transition_summary"], names, ordered, buf, progress=p
+        ),
+        "value_revisions": lambda buf, p: plots.value_revisions(
+            tables["value_revisions"], names, ordered, buf, progress=p
+        ),
+        "ground_truth": lambda buf, p: plots.ground_truth(
+            tables["series_transitions"], planted, buf, progress=p
+        ),
+    }
+    for name, render in jobs.items():
+        plots.set_theme(theme)
+        plots.animate(render, IMG / f"{name}-{theme}.gif")
+
+
 def main() -> None:
     settings = load_settings(ROOT / "config" / "demo.yaml")
     work = ROOT / "build" / "assets"
@@ -56,6 +82,7 @@ def main() -> None:
         plots.hero_animation(
             tables["vintage_curves"], names, pipeline.HERO_CODE, IMG / f"hero-{theme}.gif"
         )
+        animate_figures(tables, planted, names, theme)
     plots.set_theme("light")
     plots.social_card(tables["vintage_curves"], pipeline.HERO_CODE, IMG / "social-preview.png")
     for path in sorted([*IMG.glob("*.png"), *IMG.glob("*.gif")]):

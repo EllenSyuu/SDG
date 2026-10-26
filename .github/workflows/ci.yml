@@ -33,6 +33,7 @@ jobs:
       - name: End-to-end demo
         run: sdg4-revisions demo
       - name: README assets and explorer site build
+        if: matrix.python-version == '3.13'
         run: |
           python scripts/render_assets.py
           python scripts/build_site.py build/site
