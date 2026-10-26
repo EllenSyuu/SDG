@@ -156,7 +156,7 @@ flowchart LR
 | **Pure analytics** | Every metric is a side-effect-free function from panel to tidy frame. |
 | **Tests that need no data** | Exact-value unit tests, Hypothesis property tests (e.g. flow conservation `old + added − dropped = new`), contract tests, ground-truth tests and an end-to-end run. 97 % line coverage. |
 | **Reproducible outputs** | Deterministic generator; every README image (PNG and animated GIF, light and dark) is re-rendered by `scripts/render_assets.py`, and CI rebuilds them and the explorer site on every push. |
-| **Automation** | CI on Python 3.11–3.13 (lint, `mypy --strict`, tests, demo, asset rendering), Dependabot, on-demand Pages deployment. |
+| **Automation** | CI on Python 3.11–3.13 (lint, `mypy --strict`, tests, demo, asset rendering), on-demand Pages deployment. |
 
 More in [docs/architecture.md](docs/architecture.md).
 
