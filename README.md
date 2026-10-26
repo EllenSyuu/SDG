@@ -1,10 +1,11 @@
 <div align="center">
 
-# sdg4vintage
+# SDG 4 Data Revision Tracker
 
-**Release-vintage analytics for SDG 4 education statistics**
+**How much do education statistics change from one data release to the next?**
 
-*Measure what changes between one data release and the next: reporting lag, backfill, withdrawals and value revisions.*
+A Python toolkit that compares successive releases of SDG 4 education data and measures
+reporting lag, late-arriving data, withdrawn values and revised values.
 
 [![CI](https://github.com/EllenSyuu/SDG/actions/workflows/ci.yml/badge.svg)](https://github.com/EllenSyuu/SDG/actions/workflows/ci.yml)
 ![Python 3.11–3.13](https://img.shields.io/badge/python-3.11%20%E2%80%93%203.13-3776AB?logo=python&logoColor=white)
@@ -12,7 +13,7 @@
 ![mypy strict](https://img.shields.io/badge/types-mypy%20strict-2A6DB2)
 ![Ruff](https://img.shields.io/badge/lint-Ruff-D7FF64)
 ![Coverage 97%](https://img.shields.io/badge/coverage-97%25-1BAF7A)
-[![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
 **[Live explorer](https://ellensyuu.github.io/SDG/)** · [Why](#why) · [Quick start](#quick-start) · [What it measures](#what-it-measures) · [Validation](#validated-against-a-planted-ground-truth) · [Engineering](#engineering) · [Docs](docs/)
 
@@ -23,7 +24,7 @@
   <img alt="Animation: four releases of the same indicator drawn one on top of another; each later release lifts earlier years and extends one year further" src="docs/img/hero-light.gif">
 </picture>
 
-<sub>All figures in this repository are generated from **synthetic data** by `sdg4v demo`. The repository contains no real data.</sub>
+<sub>All figures in this repository are generated from **synthetic data** by `sdg4-revisions demo`. The repository contains no real data.</sub>
 
 ## Why
 
@@ -33,7 +34,7 @@ revises** values it published before. Anyone who reads a trend, a coverage rate 
 progress assessment off a single release sees all of that mixed in with real change in
 the world.
 
-`sdg4vintage` treats every release as a **data vintage**, the way macroeconomists treat
+The tracker treats every release as a **data vintage**, the way macroeconomists treat
 successive GDP estimates, and separates the two kinds of change. It is a typed, tested
 Python package with a CLI, a deterministic synthetic generator that serves as ground
 truth, publication-ready figures and a static interactive explorer.
@@ -64,13 +65,13 @@ with GitHub Pages.
 git clone https://github.com/EllenSyuu/SDG && cd SDG
 python -m pip install -e ".[dev]"
 
-sdg4v demo       # synthetic releases → panel → tables + figures in build/demo
+sdg4-revisions demo       # synthetic releases → panel → tables + figures in build/demo
 make check       # ruff · mypy --strict · pytest (55 tests)
 make explorer    # build the explorer from synthetic data and serve it at localhost:8000
 ```
 
 To analyse your own releases, place them in the layout described in
-[docs/data.md](docs/data.md) and run `sdg4v run`. Every parameter (releases, reference
+[docs/data.md](docs/data.md) and run `sdg4-revisions run`. Every parameter (releases, reference
 window, eligibility rule, lookback length, revision tolerance) lives in
 [`config/default.yaml`](config/default.yaml).
 
@@ -163,14 +164,15 @@ More in [docs/architecture.md](docs/architecture.md).
 ## Repository layout
 
 ```
-config/            run settings (default, demo) and the indicator taxonomy
-src/sdg4vintage/   config · taxonomy · io · analysis · plots · explorer · synthetic · pipeline · cli
-scripts/           render_assets.py (README images) · build_site.py (explorer site)
-tests/             unit, property, contract, ground-truth and end-to-end tests
-docs/              methodology, data layout, architecture, explorer page, images
+config/               run settings (default, demo) and the indicator taxonomy
+src/sdg4_revisions/   config · taxonomy · io · analysis · plots · explorer · synthetic · pipeline · cli
+scripts/              render_assets.py (README images) · build_site.py (explorer site)
+tests/                unit, property, contract, ground-truth and end-to-end tests
+docs/                 methodology, data layout, architecture, explorer page, images
 ```
 
 ## Citation and licence
 
 If you use this software, please cite it via [`CITATION.cff`](CITATION.cff) (GitHub's
-"Cite this repository" button). Released under the [MIT licence](LICENSE).
+"Cite this repository" button). Released under the [Apache License 2.0](LICENSE);
+see [`NOTICE`](NOTICE).

@@ -16,7 +16,7 @@ test:
 check: lint typecheck test   ## everything CI runs
 
 demo:           ## synthetic end-to-end run -> build/demo
-	sdg4v demo
+	sdg4-revisions demo
 
 assets:         ## re-render docs/img (light + dark) from synthetic data
 	python scripts/render_assets.py

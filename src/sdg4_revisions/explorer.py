@@ -13,9 +13,9 @@ from pathlib import Path
 
 import polars as pl
 
-from sdg4vintage import analysis, io
-from sdg4vintage.config import Settings
-from sdg4vintage.taxonomy import load_taxonomy
+from sdg4_revisions import analysis, io
+from sdg4_revisions.config import Settings
+from sdg4_revisions.taxonomy import load_taxonomy
 
 
 def encode(obs: pl.DataFrame, reference_start: int) -> dict[str, dict[str, dict[str, int]]]:

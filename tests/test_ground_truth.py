@@ -4,9 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from sdg4vintage import analysis, io
-from sdg4vintage.synthetic import SyntheticSpec, generate
-from sdg4vintage.taxonomy import Taxonomy
+from sdg4_revisions import analysis, io
+from sdg4_revisions.synthetic import SyntheticSpec, generate
+from sdg4_revisions.taxonomy import Taxonomy
 
 from .conftest import make_settings
 

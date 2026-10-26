@@ -31,7 +31,7 @@ jobs:
       - name: Test (synthetic data; real-data tests skip)
         run: python -m pytest --cov --cov-report=term-missing
       - name: End-to-end demo
-        run: sdg4v demo
+        run: sdg4-revisions demo
       - name: README assets and explorer site build
         run: |
           python scripts/render_assets.py

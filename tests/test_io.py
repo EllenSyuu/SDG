@@ -3,10 +3,10 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from sdg4vintage import io
-from sdg4vintage.config import Settings
-from sdg4vintage.synthetic import DISTRACTOR_SERIES
-from sdg4vintage.taxonomy import Taxonomy
+from sdg4_revisions import io
+from sdg4_revisions.config import Settings
+from sdg4_revisions.synthetic import DISTRACTOR_SERIES
+from sdg4_revisions.taxonomy import Taxonomy
 
 
 @pytest.fixture(scope="module")

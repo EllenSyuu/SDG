@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from sdg4vintage.config import Eligibility, Settings, load_settings
+from sdg4_revisions.config import Eligibility, Settings, load_settings
 
 ROOT = Path(__file__).resolve().parents[1]
 

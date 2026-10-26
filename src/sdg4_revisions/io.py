@@ -24,8 +24,8 @@ from pathlib import Path
 
 import polars as pl
 
-from sdg4vintage.config import Settings
-from sdg4vintage.taxonomy import Taxonomy
+from sdg4_revisions.config import Settings
+from sdg4_revisions.taxonomy import Taxonomy
 
 DATA_FILE = "SDG_DATA_NATIONAL.csv"
 REQUIRED_COLUMNS = ("indicator_id", "country_id", "year", "value")
@@ -77,7 +77,7 @@ def build_panel(settings: Settings, taxonomy: Taxonomy) -> pl.DataFrame:
         if not path.exists():
             raise FileNotFoundError(
                 f"{path} not found. Place release files in the layout described in "
-                "docs/data.md, or run `sdg4v demo` to use synthetic data."
+                "docs/data.md, or run `sdg4-revisions demo` to use synthetic data."
             )
         lazy = scan_release(path, release_year)
         series = lazy.select(pl.col("series_id").unique()).collect()["series_id"]

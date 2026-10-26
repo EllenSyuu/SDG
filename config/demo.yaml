@@ -1,4 +1,4 @@
-# Synthetic demo: `sdg4v demo` writes data here and runs the whole pipeline.
+# Synthetic demo: `sdg4-revisions demo` writes data here and runs the whole pipeline.
 paths:
   raw_dir: build/demo/raw
   processed_dir: build/demo/processed

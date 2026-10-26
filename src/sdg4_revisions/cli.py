@@ -1,4 +1,4 @@
-"""Command-line interface: ``sdg4v --help``."""
+"""Command-line interface: ``sdg4-revisions --help``."""
 
 from __future__ import annotations
 
@@ -9,15 +9,15 @@ from typing import Annotated
 
 import typer
 
-from sdg4vintage import pipeline
-from sdg4vintage.config import load_settings
-from sdg4vintage.explorer import export
-from sdg4vintage.synthetic import generate
+from sdg4_revisions import pipeline
+from sdg4_revisions.config import load_settings
+from sdg4_revisions.explorer import export
+from sdg4_revisions.synthetic import generate
 
 app = typer.Typer(
     add_completion=False,
     no_args_is_help=True,
-    help="Release-vintage analytics for SDG 4 education statistics.",
+    help="SDG 4 Data Revision Tracker: measure what changes between data releases.",
 )
 
 ConfigOpt = Annotated[Path, typer.Option("--config", "-c", help="Run configuration (YAML).")]

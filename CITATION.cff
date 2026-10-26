@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "sdg4vintage: release-vintage analytics for SDG 4 education statistics"
+title: "SDG 4 Data Revision Tracker"
 type: software
 authors:
   - family-names: Zhou
@@ -12,7 +12,7 @@ abstract: >-
   deterministic synthetic generator with a planted ground truth.
 version: 0.1.0
 date-released: 2026-10-26
-license: MIT
+license: Apache-2.0
 repository-code: "https://github.com/EllenSyuu/SDG"
 keywords:
   - SDG 4

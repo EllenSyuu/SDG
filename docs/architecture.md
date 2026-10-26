@@ -29,7 +29,7 @@ flowchart LR
 | `pipeline.py` | Orchestration | One call: panel → tables → figures → `summary.json`. |
 | `plots.py` | Static figures, light and dark themes | Colour by role: sequential for ordered releases, diverging with a neutral midpoint for net change, three fixed categorical slots for sources. Title blocks are laid out in inches so they never collide with content. |
 | `explorer.py` | Data for the web explorer | Country × year presence as integer bitmasks. |
-| `cli.py` | `sdg4v` entry point | `run`, `demo`, `explorer`. |
+| `cli.py` | `sdg4-revisions` entry point | `run`, `demo`, `explorer`. |
 | `scripts/render_assets.py` | README images | Re-renders every figure and the animated hero in `docs/img` from synthetic data, in both themes. |
 | `scripts/build_site.py` | Explorer site | Synthetic data → pipeline → `data.json` (with the planted ledger) + `index.html`, deployed to GitHub Pages. |
 

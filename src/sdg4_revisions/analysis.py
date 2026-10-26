@@ -5,7 +5,7 @@ Vocabulary (borrowed from real-time macroeconomic data analysis):
 * **release / vintage** -- one published snapshot of the database (e.g. Sept 2025).
 * **reference year**    -- the school/fiscal year a value describes.
 * **eligible**          -- a reference year a release could be expected to contain
-                           (see :class:`~sdg4vintage.config.Eligibility`).
+                           (see :class:`~sdg4_revisions.config.Eligibility`).
 * **observation**       -- a (release, indicator, country, reference year) cell for
                            which at least one constituent series has a value.
 
@@ -19,7 +19,7 @@ from itertools import pairwise
 
 import polars as pl
 
-from sdg4vintage.config import Settings
+from sdg4_revisions.config import Settings
 
 OBS_KEYS = ["release", "code", "country", "ref_year"]
 

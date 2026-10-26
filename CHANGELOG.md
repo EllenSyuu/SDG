@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+- Project renamed to **SDG 4 Data Revision Tracker** (distribution `sdg4-revision-tracker`,
+  import package `sdg4_revisions`, CLI `sdg4-revisions`).
+- Licence changed from MIT to Apache-2.0; added `NOTICE`.
+- CI actions updated to current major versions; Dependabot removed to keep a single branch.
+
 ### Added
 - Redesigned interactive explorer: indicator switcher, vintage curves with a release-by-
   release hover readout, one-year drift chart, release scrubber on the country × year
@@ -23,6 +29,6 @@ All notable changes to this project are documented here. The format follows
   layers, transition flows, series-level transition ledger, value revisions.
 - Deterministic synthetic generator with a ledger of planted events.
 - Figures in light and dark themes, social preview image, static explorer.
-- `sdg4v` CLI: `run`, `demo`, `explorer`.
+- `sdg4-revisions` CLI: `run`, `demo`, `explorer`.
 - Unit, property-based, contract, ground-truth and end-to-end tests; CI on Python
   3.11–3.13; on-demand GitHub Pages deployment of the explorer.

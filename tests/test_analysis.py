@@ -7,8 +7,8 @@ from hypothesis import given
 from hypothesis import settings as hsettings
 from hypothesis import strategies as st
 
-from sdg4vintage import analysis as A
-from sdg4vintage.config import Eligibility, Settings
+from sdg4_revisions import analysis as A
+from sdg4_revisions.config import Eligibility, Settings
 
 from .conftest import make_settings, panel_from_rows
 

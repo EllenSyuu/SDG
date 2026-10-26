@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from sdg4vintage.taxonomy import (
+from sdg4_revisions.taxonomy import (
     AmbiguousSeriesError,
     Indicator,
     SeriesRule,

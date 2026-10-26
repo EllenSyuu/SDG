@@ -3,9 +3,9 @@
 import json
 from pathlib import Path
 
-from sdg4vintage import pipeline
-from sdg4vintage.config import Settings
-from sdg4vintage.explorer import export
+from sdg4_revisions import pipeline
+from sdg4_revisions.config import Settings
+from sdg4_revisions.explorer import export
 
 
 def test_full_run(synthetic_settings: Settings, tmp_path: Path) -> None:

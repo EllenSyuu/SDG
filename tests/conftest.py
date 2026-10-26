@@ -5,10 +5,10 @@ from pathlib import Path
 import polars as pl
 import pytest
 
-from sdg4vintage.config import Paths, Settings
-from sdg4vintage.io import PANEL_SCHEMA
-from sdg4vintage.synthetic import generate
-from sdg4vintage.taxonomy import Taxonomy, load_taxonomy
+from sdg4_revisions.config import Paths, Settings
+from sdg4_revisions.io import PANEL_SCHEMA
+from sdg4_revisions.synthetic import generate
+from sdg4_revisions.taxonomy import Taxonomy, load_taxonomy
 
 ROOT = Path(__file__).resolve().parents[1]
 

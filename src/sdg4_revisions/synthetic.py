@@ -3,7 +3,7 @@
 The generator writes files in exactly the layout the pipeline reads
 (``<raw_dir>/<YYYYMM>/SDG_DATA_NATIONAL.csv``) plus a population file, so ingestion,
 analytics, figures and the explorer all run end to end without any real data. It is
-used by the test suite, by CI and by ``sdg4v demo``.
+used by the test suite, by CI and by ``sdg4-revisions demo``.
 
 Every effect the analysis is designed to measure is planted deliberately, and every
 planted event is recorded in a :class:`GroundTruth` ledger, so the pipeline's output

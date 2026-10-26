@@ -13,10 +13,10 @@ from pathlib import Path
 
 import polars as pl
 
-from sdg4vintage import io, pipeline, plots
-from sdg4vintage.config import load_settings
-from sdg4vintage.synthetic import generate
-from sdg4vintage.taxonomy import load_taxonomy
+from sdg4_revisions import io, pipeline, plots
+from sdg4_revisions.config import load_settings
+from sdg4_revisions.synthetic import generate
+from sdg4_revisions.taxonomy import load_taxonomy
 
 ROOT = Path(__file__).resolve().parents[1]
 IMG = ROOT / "docs" / "img"

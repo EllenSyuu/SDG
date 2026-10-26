@@ -473,12 +473,20 @@ def social_card(curves: pl.DataFrame, code: str, out: Path) -> Path:
     """1280x640 repository preview image: name, one-line pitch, a vintage-curve motif."""
     t = _theme
     fig = plt.figure(figsize=(12.8, 6.4), dpi=100)
-    fig.text(0.06, 0.80, "sdg4vintage", fontsize=46, fontweight="bold", color=t.ink, va="top")
+    fig.text(
+        0.06,
+        0.80,
+        "SDG 4 Data Revision Tracker",
+        fontsize=40,
+        fontweight="bold",
+        color=t.ink,
+        va="top",
+    )
     fig.text(
         0.06,
         0.62,
-        "Release-vintage analytics for SDG 4 education statistics",
-        fontsize=20,
+        "How education statistics change from one data release to the next",
+        fontsize=19,
         color=t.ink_2,
         va="top",
     )

@@ -3,12 +3,12 @@ requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sdg4vintage"
+name = "sdg4-revision-tracker"
 version = "0.1.0"
-description = "Release-vintage analytics for SDG 4 education statistics: how country coverage and values change from one data release to the next."
+description = "SDG 4 Data Revision Tracker: measure how education statistics change from one data release to the next."
 readme = "README.md"
-license = "MIT"
-license-files = ["LICENSE"]
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 authors = [{ name = "Ziyi Zhou" }]
 requires-python = ">=3.11"
 keywords = ["SDG 4", "official statistics", "data vintages", "real-time data", "data quality", "polars"]
@@ -17,7 +17,6 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
-  "License :: OSI Approved :: MIT License",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering :: Information Analysis",
 ]
@@ -41,7 +40,7 @@ dev = [
 ]
 
 [project.scripts]
-sdg4v = "sdg4vintage.cli:app"
+sdg4-revisions = "sdg4_revisions.cli:app"
 
 [project.urls]
 Homepage = "https://github.com/EllenSyuu/SDG"
@@ -51,15 +50,15 @@ Changelog = "https://github.com/EllenSyuu/SDG/blob/main/CHANGELOG.md"
 Issues = "https://github.com/EllenSyuu/SDG/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/sdg4vintage"]
+packages = ["src/sdg4_revisions"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"
 
 [tool.coverage.run]
-source = ["sdg4vintage"]
-omit = ["src/sdg4vintage/cli.py", "src/sdg4vintage/plots.py"]
+source = ["sdg4_revisions"]
+omit = ["src/sdg4_revisions/cli.py", "src/sdg4_revisions/plots.py"]
 
 [tool.ruff]
 line-length = 100

@@ -9,9 +9,9 @@ from pathlib import Path
 
 import polars as pl
 
-from sdg4vintage import analysis, io, plots
-from sdg4vintage.config import Settings
-from sdg4vintage.taxonomy import Taxonomy, load_taxonomy
+from sdg4_revisions import analysis, io, plots
+from sdg4_revisions.config import Settings
+from sdg4_revisions.taxonomy import Taxonomy, load_taxonomy
 
 HEADLINE_CODES = ["4.1.2", "4.1.3", "4.1.4", "4.1.5", "4.c.1", "1.a.2"]
 HERO_CODE = "4.c.1"
