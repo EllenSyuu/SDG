@@ -1,0 +1,29 @@
+# data never committed: inputs are fetched (see docs/data.md), outputs are rebuilt
+data/raw/
+data/processed/
+build/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+dist/
+
+# os / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+~$*
+
+# local outputs on your own data
+reports/
+site/

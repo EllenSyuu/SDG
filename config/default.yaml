@@ -1,0 +1,21 @@
+# Run configuration for your own releases.  Paths are relative to the repository root.
+# Place each release as data/raw/<folder>/SDG_DATA_NATIONAL.csv (layout: docs/data.md).
+paths:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  population_file: data/raw/wpp/total_population_by_sex.csv   # optional
+  indicators_file: config/indicators.yaml
+  figures_dir: reports/figures
+  tables_dir: reports/tables
+
+releases:            # folder name -> release year
+  "202209": 2022
+  "202309": 2023
+  "202409": 2024
+  "202509": 2025
+
+reference_start: 2008      # first reference year analysed
+reference_end: 2025
+eligibility: strict        # a release in year R can contain reference years < R
+lookback_years: 5          # rolling coverage window
+revision_tolerance: 1.0e-3 # |change| <= this is rounding noise, not a revision

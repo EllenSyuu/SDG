@@ -1,0 +1,13 @@
+# Synthetic demo: `sdg4v demo` writes data here and runs the whole pipeline.
+paths:
+  raw_dir: build/demo/raw
+  processed_dir: build/demo/processed
+  population_file: build/demo/raw/wpp/total_population_by_sex.csv
+  indicators_file: config/indicators.yaml
+  figures_dir: build/demo/figures
+  tables_dir: build/demo/tables
+releases: {"202209": 2022, "202309": 2023, "202409": 2024, "202509": 2025}
+reference_start: 2008
+reference_end: 2025
+eligibility: strict
+lookback_years: 5

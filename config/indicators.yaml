@@ -1,0 +1,77 @@
+# SDG 4 indicator taxonomy: which series make up each indicator, and from which
+# kind of source.  Patterns are full-match, case-insensitive regular expressions on
+# the series identifier (column INDICATOR_ID of a release file).
+#
+# Sources:  admin = administrative data   hhs = household survey   model = modelled
+#
+# Within an indicator, rules are tried top to bottom (put `model` and `hhs` before the
+# broader `admin` rule).  A series that matches two indicators is a configuration
+# error and fails loudly (see tests/test_taxonomy.py).
+
+indicators:
+  "4.1.2":
+    name: Completion rate
+    target: "4.1"
+    series:
+      - {source: model, pattern: 'CR\.MOD\.[123](\.[FM])?'}
+      - {source: hhs, pattern: 'CR\.[123](\.(F|M|URB|RUR|Q[1-5]|NATIVE|NONNATIVE|ABL|DIS))*'}
+  "4.1.3":
+    name: Gross intake ratio to the last grade
+    target: "4.1"
+    series:
+      - {source: admin, pattern: 'AIR\.(1|2\.GPV)\.GLAST(\.[FM])?'}
+  "4.1.4":
+    name: Out-of-school rate
+    target: "4.1"
+    series:
+      - {source: model, pattern: 'ROFST\.MOD\.[123](\.[FM])?'}
+      - {source: hhs, pattern: 'ROFST\.H\.[123](\.(F|M|URB|RUR|Q[1-5]|NATIVE|NONNATIVE|ABL|DIS))*'}
+      - {source: admin, pattern: 'ROFST\.(1|2|3|1T2|1T3|2T3|AGM1)(\.[FM])?\.CP'}
+  "4.1.5":
+    name: Over-age for grade
+    target: "4.1"
+    series:
+      - {source: hhs, pattern: 'OAEPG\.H\.[12](\.(F|M|URB|RUR|Q[1-5]|NATIVE|NONNATIVE|ABL|DIS))*'}
+      - {source: admin, pattern: 'OAEPG\.(1|2\.GPV)(\.[FM])?'}
+  "4.2.2":
+    name: Participation one year before primary
+    target: "4.2"
+    series:
+      - {source: hhs, pattern: 'NARA\.AGM1(\.(F|M|URB|RUR|Q[1-5]|NATIVE|NONNATIVE|ABL|DIS))*'}
+      - {source: admin, pattern: 'NERA\.AGM1(\.[FM])?\.CP'}
+  "4.3.2":
+    name: Participation in tertiary education
+    target: "4.3"
+    series:
+      - {source: hhs, pattern: 'GAR\.5T8(\.(F|M|URB|RUR|Q[1-5]|NATIVE|NONNATIVE|ABL|DIS))*'}
+      - {source: admin, pattern: 'GER\.5T8(\.[FM])?'}
+  "4.c.1":
+    name: Teachers with minimum qualifications
+    target: "4.c"
+    series:
+      - {source: admin, pattern: 'TRTP\.(02|1|2|2T3|3)(\.[FM])?'}
+  "4.c.2":
+    name: Pupil-trained teacher ratio
+    target: "4.c"
+    series:
+      - {source: admin, pattern: 'PTRHC\.(02|1|2|2T3|3)\.TRAINED'}
+  "4.c.3":
+    name: Teachers qualified to national standards
+    target: "4.c"
+    series:
+      - {source: admin, pattern: 'QUTP\.(02|1|2|2T3|3)(\.[FM])?'}
+  "4.c.4":
+    name: Pupil-qualified teacher ratio
+    target: "4.c"
+    series:
+      - {source: admin, pattern: 'PTRHC\.(02|1|2|2T3|3)\.QUALIFIED'}
+  "1.a.2":
+    name: Education share of government expenditure
+    target: "1.a"
+    series:
+      - {source: admin, pattern: 'XGOVEXP\.IMF(CALC)?'}
+  "FFA":
+    name: Education expenditure as % of GDP
+    target: "FFA"
+    series:
+      - {source: admin, pattern: 'XGDP\.FSGOV'}

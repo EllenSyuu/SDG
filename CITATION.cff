@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "sdg4vintage: release-vintage analytics for SDG 4 education statistics"
+type: software
+authors:
+  - family-names: Zhou
+    given-names: Ziyi
+version: 0.1.0
+date-released: 2026-10-26
+license: MIT
+repository-code: "https://github.com/EllenSyuu/SDG"
+keywords:
+  - SDG 4
+  - official statistics
+  - data vintages
+  - data revisions
+  - data quality
