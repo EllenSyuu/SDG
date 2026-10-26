@@ -56,3 +56,9 @@ def test_ambiguous_series_fail_loudly() -> None:
 def test_mapping_frame_drops_unknown_and_dedupes(taxonomy: Taxonomy) -> None:
     frame = taxonomy.mapping_frame(["ROFST.1.CP", "rofst.1.cp ", "UNKNOWN"])
     assert frame.to_dicts() == [{"series_id": "ROFST.1.CP", "code": "4.1.4", "source": "admin"}]
+
+
+def test_unknown_indicator_code_raises(taxonomy: Taxonomy) -> None:
+    assert taxonomy.get("4.1.4").code == "4.1.4"
+    with pytest.raises(KeyError, match=r"9\.9\.9"):
+        taxonomy.get("9.9.9")

@@ -44,6 +44,34 @@ def test_duplicate_keys_are_rejected(panel: pl.DataFrame) -> None:
         io.validate_panel(pl.concat([panel.head(3), panel.head(1)]))
 
 
+@pytest.mark.parametrize(
+    ("breakage", "message"),
+    [
+        (pl.col("ref_year").cast(pl.Int64), "panel schema"),
+        (
+            pl.when(pl.int_range(pl.len()) == 0)
+            .then(None)
+            .otherwise(pl.col("country"))
+            .alias("country"),
+            "null keys",
+        ),
+        (
+            pl.when(pl.int_range(pl.len()) == 0)
+            .then(pl.lit("abc"))
+            .otherwise(pl.col("country"))
+            .alias("country"),
+            "malformed country code",
+        ),
+    ],
+    ids=["wrong-dtype", "null-key", "lowercase-iso"],
+)
+def test_contract_violations_are_rejected(
+    panel: pl.DataFrame, breakage: pl.Expr, message: str
+) -> None:
+    with pytest.raises(io.SchemaError, match=message):
+        io.validate_panel(panel.head(5).with_columns(breakage))
+
+
 def test_missing_release_has_actionable_error(tmp_path: Path, taxonomy: Taxonomy) -> None:
     settings = Settings.model_validate(
         {"releases": {"209909": 2099}, "paths": {"raw_dir": tmp_path}}
