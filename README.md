@@ -11,7 +11,7 @@
 ![Polars](https://img.shields.io/badge/dataframes-Polars-CD792C)
 ![mypy strict](https://img.shields.io/badge/types-mypy%20strict-2A6DB2)
 ![Ruff](https://img.shields.io/badge/lint-Ruff-D7FF64)
-![Coverage 98%](https://img.shields.io/badge/coverage-98%25-1BAF7A)
+![Coverage 97%](https://img.shields.io/badge/coverage-97%25-1BAF7A)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
 **[Live explorer](https://ellensyuu.github.io/SDG/)** · [Why](#why) · [Quick start](#quick-start) · [What it measures](#what-it-measures) · [Validation](#validated-against-a-planted-ground-truth) · [Engineering](#engineering) · [Docs](docs/)
@@ -154,7 +154,7 @@ flowchart LR
 | **An explicit data contract** | Ingestion normalises schema drift and guarantees schema, unique keys, non-null keys and code format before any metric runs. |
 | **Lazy, single-pass ingestion** | Polars scans each release once and materialises only mapped series; the panel is stored as zstd Parquet. |
 | **Pure analytics** | Every metric is a side-effect-free function from panel to tidy frame. |
-| **Tests that need no data** | Exact-value unit tests, Hypothesis property tests (e.g. flow conservation `old + added − dropped = new`), contract tests, ground-truth tests and an end-to-end run. 98 % line coverage. |
+| **Tests that need no data** | Exact-value unit tests, Hypothesis property tests (e.g. flow conservation `old + added − dropped = new`), contract tests, ground-truth tests and an end-to-end run. 97 % line coverage. |
 | **Reproducible outputs** | Deterministic generator; every README image (PNG and animated GIF, light and dark) is re-rendered by `scripts/render_assets.py`, and CI rebuilds them and the explorer site on every push. |
 | **Automation** | CI on Python 3.11–3.13 (lint, `mypy --strict`, tests, demo, asset rendering), Dependabot, on-demand Pages deployment. |
 
