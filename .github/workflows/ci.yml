@@ -36,7 +36,7 @@ jobs:
         run: |
           python scripts/render_assets.py
           python scripts/build_site.py build/site
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: matrix.python-version == '3.13'
         with:
           name: demo-figures
