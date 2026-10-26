@@ -21,10 +21,9 @@ demo:           ## synthetic end-to-end run -> build/demo
 assets:         ## re-render docs/img (light + dark) from synthetic data
 	python scripts/render_assets.py
 
-explorer: demo  ## build the explorer payload from the demo and serve it
-	sdg4v explorer --out build/demo/explorer/data.json
-	cp docs/explorer/index.html build/demo/explorer/
-	python -m http.server -d build/demo/explorer 8000
+explorer:       ## build the explorer site from synthetic data and serve it
+	python scripts/build_site.py build/site
+	python -m http.server -d build/site 8000
 
 clean:
 	rm -rf build data/processed .pytest_cache .mypy_cache .ruff_cache .coverage

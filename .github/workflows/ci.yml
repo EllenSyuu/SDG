@@ -32,8 +32,10 @@ jobs:
         run: python -m pytest --cov --cov-report=term-missing
       - name: End-to-end demo
         run: sdg4v demo
-      - name: README assets render
-        run: python scripts/render_assets.py
+      - name: README assets and explorer site build
+        run: |
+          python scripts/render_assets.py
+          python scripts/build_site.py build/site
       - uses: actions/upload-artifact@v4
         if: matrix.python-version == '3.13'
         with:

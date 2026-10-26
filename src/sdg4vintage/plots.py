@@ -18,6 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
+from matplotlib.animation import FuncAnimation, PillowWriter
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -498,5 +499,68 @@ def social_card(curves: pl.DataFrame, code: str, out: Path) -> Path:
     ax.axis("off")
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=100)
+    plt.close(fig)
+    return out
+
+
+def hero_animation(curves: pl.DataFrame, names: dict[str, str], code: str, out: Path) -> Path:
+    """Animated GIF: releases are layered on one at a time, then the stack holds."""
+    t = _theme
+    panel = curves.filter(pl.col("code") == code)
+    releases = sorted(panel["release"].unique().to_list())
+    colors = dict(zip(releases, _ramp(len(releases)), strict=True))
+    lines = {
+        r: panel.filter(pl.col("release") == r).sort("ref_year").select("ref_year", "n_countries")
+        for r in releases
+    }
+    fig, ax = plt.subplots(figsize=(10, 4.2), dpi=110)
+    fig.subplots_adjust(left=0.07, right=0.98, bottom=0.13, top=1 - 1.2 / 4.2)
+    _title(
+        fig,
+        "Every release rewrites the past",
+        f"{_label(code, names)}: countries with a value per reference year, "
+        "one line per release (synthetic demo data)",
+    )
+    ymax = max([1, *panel["n_countries"].to_list()]) * 1.15
+    years = panel["ref_year"].to_list()
+    steps = 14  # frames to draw one release
+    hold = 18
+
+    def frame(i: int) -> None:
+        ax.clear()
+        ax.set_xlim(min(years) - 0.3, max(years) + 0.3)
+        ax.set_ylim(0, ymax)
+        ax.set_ylabel("Countries with a value")
+        ax.grid(True, axis="y")
+        ax.grid(False, axis="x")
+        shown = min(len(releases), i // steps + 1)
+        for k, r in enumerate(releases[:shown]):
+            data = lines[r]
+            frac = 1.0 if k < shown - 1 else min(1.0, (i % steps + 1) / steps)
+            n = max(2, round(frac * data.height))
+            latest = k == shown - 1
+            ax.plot(
+                data["ref_year"][:n],
+                data["n_countries"][:n],
+                color=colors[r],
+                lw=2.8 if latest else 1.8,
+                label=f"{r} release",
+            )
+            if n == data.height:
+                ax.scatter(
+                    data["ref_year"][-1],
+                    data["n_countries"][-1],
+                    s=30,
+                    color=colors[r],
+                    edgecolor=t.surface,
+                    linewidth=1.5,
+                    zorder=3,
+                )
+        ax.legend(loc="lower left", ncols=len(releases))
+
+    total = steps * len(releases) + hold
+    anim = FuncAnimation(fig, lambda i: frame(min(i, steps * len(releases) - 1)), frames=total)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    anim.save(out, writer=PillowWriter(fps=16), dpi=110)
     plt.close(fig)
     return out

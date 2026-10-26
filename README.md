@@ -14,13 +14,13 @@
 ![Coverage 98%](https://img.shields.io/badge/coverage-98%25-1BAF7A)
 [![License: MIT](https://img.shields.io/badge/license-MIT-lightgrey)](LICENSE)
 
-[Why](#why) · [Quick start](#quick-start) · [What it measures](#what-it-measures) · [Validation](#validated-against-a-planted-ground-truth) · [Engineering](#engineering) · [Docs](docs/)
+**[Live explorer](https://ellensyuu.github.io/SDG/)** · [Why](#why) · [Quick start](#quick-start) · [What it measures](#what-it-measures) · [Validation](#validated-against-a-planted-ground-truth) · [Engineering](#engineering) · [Docs](docs/)
 
 </div>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/img/hero-dark.png">
-  <img alt="Vintage curves for one indicator across four releases, and how one reference year's count grows from release to release" src="docs/img/hero-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/hero-dark.gif">
+  <img alt="Animation: four releases of the same indicator drawn one on top of another; each later release lifts earlier years and extends one year further" src="docs/img/hero-light.gif">
 </picture>
 
 <sub>All figures in this repository are generated from **synthetic data** by `sdg4v demo`. The repository contains no real data.</sub>
@@ -38,6 +38,26 @@ successive GDP estimates, and separates the two kinds of change. It is a typed, 
 Python package with a CLI, a deterministic synthetic generator that serves as ground
 truth, publication-ready figures and a static interactive explorer.
 
+## Interactive explorer
+
+A static, dependency-free page that lets you switch indicator, hover any reference year
+to compare releases, scrub through releases on the country × year matrix, see what each
+release added or withdrew, and check the pipeline's counts against the generator's
+planted record. It is built from synthetic data by `scripts/build_site.py` and deployed
+with GitHub Pages.
+
+<a href="https://ellensyuu.github.io/SDG/">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/explorer-dark.png">
+  <img alt="Screenshot of the interactive explorer: vintage curves with a hover tooltip comparing four releases, and a bar chart of one reference year across releases" src="docs/img/explorer-light.png">
+</picture>
+</a>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/hero-dark.png">
+  <img alt="Static version: vintage curves for one indicator, and how one reference year's count grows from release to release" src="docs/img/hero-light.png">
+</picture>
+
 ## Quick start
 
 ```bash
@@ -46,7 +66,7 @@ python -m pip install -e ".[dev]"
 
 sdg4v demo       # synthetic releases → panel → tables + figures in build/demo
 make check       # ruff · mypy --strict · pytest (55 tests)
-make explorer    # interactive explorer on the demo data → http://localhost:8000
+make explorer    # build the explorer from synthetic data and serve it at localhost:8000
 ```
 
 To analyse your own releases, place them in the layout described in
@@ -135,7 +155,7 @@ flowchart LR
 | **Lazy, single-pass ingestion** | Polars scans each release once and materialises only mapped series; the panel is stored as zstd Parquet. |
 | **Pure analytics** | Every metric is a side-effect-free function from panel to tidy frame. |
 | **Tests that need no data** | Exact-value unit tests, Hypothesis property tests (e.g. flow conservation `old + added − dropped = new`), contract tests, ground-truth tests and an end-to-end run. 98 % line coverage. |
-| **Reproducible outputs** | Deterministic generator; every README image is re-rendered by `scripts/render_assets.py` and in CI. |
+| **Reproducible outputs** | Deterministic generator; every README image (PNG and animated GIF, light and dark) is re-rendered by `scripts/render_assets.py`, and CI rebuilds them and the explorer site on every push. |
 | **Automation** | CI on Python 3.11–3.13 (lint, `mypy --strict`, tests, demo, asset rendering), Dependabot, on-demand Pages deployment. |
 
 More in [docs/architecture.md](docs/architecture.md).
@@ -145,7 +165,7 @@ More in [docs/architecture.md](docs/architecture.md).
 ```
 config/            run settings (default, demo) and the indicator taxonomy
 src/sdg4vintage/   config · taxonomy · io · analysis · plots · explorer · synthetic · pipeline · cli
-scripts/           render_assets.py: README images from synthetic data
+scripts/           render_assets.py (README images) · build_site.py (explorer site)
 tests/             unit, property, contract, ground-truth and end-to-end tests
 docs/              methodology, data layout, architecture, explorer page, images
 ```

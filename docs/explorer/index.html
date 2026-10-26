@@ -4,131 +4,397 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SDG 4 Vintage Explorer</title>
-<meta name="description" content="Which countries report each SDG 4 indicator, for which years, in each data release — and what changed between releases.">
+<meta name="description" content="Explore how each data release changes what is known about SDG 4 education statistics: reporting lag, backfill, withdrawals and value revisions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
     color-scheme: light;
-    --surface: #fcfcfb; --surface-2: #f3f2ee; --line: #e4e3df;
-    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #8a8984;
-    --reported: #2a78d6; --empty: #ecebe7; --added: #1baf7a; --dropped: #eb6834;
-    --focus: #0b0b0b;
+    --paper: #f3f5f7; --panel: #ffffff; --rule: #d9dee5; --rule-2: #e9edf1;
+    --ink: #16202e; --ink-2: #4b5768; --ink-3: #7d8896;
+    --r1: #b9d3f0; --r2: #7eaee6; --r3: #3b7dd8; --r4: #1b4f9c;
+    --added: #14a37f; --dropped: #e2622b; --empty: #e6eaef; --neutral: #eef1f4;
+    --tip-bg: #16202e; --tip-ink: #f3f5f7; --focus: #3b7dd8;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       color-scheme: dark;
-      --surface: #1a1a19; --surface-2: #232321; --line: #34332f;
-      --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
-      --reported: #3987e5; --empty: #2c2b28; --added: #199e70; --dropped: #d95926;
-      --focus: #f0efec;
+      --paper: #0e141c; --panel: #131b25; --rule: #243042; --rule-2: #1b2532;
+      --ink: #e8edf3; --ink-2: #a3afbd; --ink-3: #6f7c8c;
+      --r1: #244b7e; --r2: #3570b8; --r3: #5c9be6; --r4: #b5d3f7;
+      --added: #1fb98f; --dropped: #f07a45; --empty: #1c2531; --neutral: #18212c;
+      --tip-bg: #e8edf3; --tip-ink: #0e141c; --focus: #5c9be6;
     }
   }
   :root[data-theme="dark"] {
     color-scheme: dark;
-    --surface: #1a1a19; --surface-2: #232321; --line: #34332f;
-    --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8f8e86;
-    --reported: #3987e5; --empty: #2c2b28; --added: #199e70; --dropped: #d95926;
-    --focus: #f0efec;
+    --paper: #0e141c; --panel: #131b25; --rule: #243042; --rule-2: #1b2532;
+    --ink: #e8edf3; --ink-2: #a3afbd; --ink-3: #6f7c8c;
+    --r1: #244b7e; --r2: #3570b8; --r3: #5c9be6; --r4: #b5d3f7;
+    --added: #1fb98f; --dropped: #f07a45; --empty: #1c2531; --neutral: #18212c;
+    --tip-bg: #e8edf3; --tip-ink: #0e141c; --focus: #5c9be6;
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
   body {
-    margin: 0; background: var(--surface); color: var(--ink);
-    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0; background: var(--paper); color: var(--ink);
+    font: 400 16px/1.55 "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-variant-numeric: tabular-nums;
   }
-  main { max-width: 1080px; margin: 0 auto; padding: 32px 16px 64px; }
-  h1 { font-size: 24px; line-height: 1.25; margin: 0 0 6px; letter-spacing: -0.01em; }
-  .lede { color: var(--ink-2); margin: 0 0 24px; max-width: 70ch; }
-  .controls { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; margin-bottom: 16px; }
-  label { display: grid; gap: 4px; font-size: 12px; color: var(--ink-2); font-weight: 600; }
-  select {
-    font: inherit; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line);
-    border-radius: 8px; padding: 7px 10px; min-width: 120px; max-width: 100%;
+  a { color: inherit; text-underline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+  header.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 0; }
+  .brand { font-weight: 800; letter-spacing: -0.01em; font-size: 17px; text-decoration: none; }
+  .top nav { display: flex; gap: 6px; align-items: center; }
+  .btn {
+    font: inherit; font-size: 14px; color: var(--ink-2); background: transparent;
+    border: 1px solid var(--rule); border-radius: 999px; padding: 6px 14px; cursor: pointer; text-decoration: none;
   }
-  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
-  .seg button {
-    font: inherit; color: var(--ink-2); background: transparent; border: 0; padding: 7px 12px; cursor: pointer;
+  .btn:hover { color: var(--ink); border-color: var(--ink-3); }
+
+  .hero { padding: 40px 0 8px; }
+  .hero h1 {
+    font-size: clamp(34px, 5.6vw, 64px); line-height: 1.02; letter-spacing: -0.035em;
+    font-weight: 800; margin: 0 0 18px; max-width: 14ch;
   }
-  .seg button[aria-pressed="true"] { background: var(--surface-2); color: var(--ink); font-weight: 600; }
-  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 8px 0 20px; }
-  .stat { background: var(--surface-2); border-radius: 10px; padding: 12px 14px; }
-  .stat b { display: block; font-size: 22px; font-variant-numeric: tabular-nums; }
-  .stat span { color: var(--ink-2); font-size: 12px; }
-  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
-  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
-  .chart { position: relative; overflow-x: auto; border-top: 1px solid var(--line); padding-top: 8px; }
-  svg text { fill: var(--ink-2); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .lede { font-size: 18px; color: var(--ink-2); max-width: 62ch; margin: 0 0 8px; }
+  .note { font-size: 13px; color: var(--ink-3); margin: 0; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin: 28px 0 16px; }
+  .pill {
+    font: inherit; font-size: 14px; border: 1px solid var(--rule); background: var(--panel);
+    color: var(--ink-2); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+  }
+  .pill[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); font-weight: 600; }
+
+  .stage {
+    display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr); gap: 24px;
+    background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; padding: 24px;
+  }
+  .stage h2, section h2 { font-size: 15px; font-weight: 600; margin: 0 0 4px; letter-spacing: 0; }
+  .sub { font-size: 13.5px; color: var(--ink-2); margin: 0 0 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); margin: 4px 0 8px; }
+  .legend button { font: inherit; color: inherit; background: none; border: 0; padding: 2px 0; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .legend button[aria-pressed="false"] { opacity: .4; }
+  .sw { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { fill: var(--ink-3); font-size: 11px; font-family: inherit; }
+  .axis line, .grid line { stroke: var(--rule-2); }
+  .axis path { stroke: none; }
+  .crosshair { stroke: var(--ink-3); stroke-dasharray: 3 3; }
+  .draw { stroke-dasharray: var(--len); stroke-dashoffset: var(--len); animation: draw 900ms ease-out forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) { .draw { animation: none; stroke-dashoffset: 0; } }
+
+  .yearpick { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+  input[type=range] { accent-color: var(--r3); flex: 1; min-width: 0; }
+
+  section { padding: 56px 0 0; }
+  section > .head { max-width: 70ch; margin-bottom: 16px; }
+  section > .head h2 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+  section > .head p { color: var(--ink-2); margin: 0; }
+  .card { background: var(--panel); border: 1px solid var(--rule); border-radius: 16px; padding: 20px 24px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-bottom: 12px; font-size: 14px; color: var(--ink-2); }
+  .controls label { display: inline-flex; align-items: center; gap: 8px; }
+  select { font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 8px; padding: 5px 8px; }
+  .seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 999px; padding: 2px; background: var(--paper); }
+  .seg button { font: inherit; font-size: 13.5px; border: 0; background: transparent; color: var(--ink-2); padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--panel); color: var(--ink); font-weight: 600; box-shadow: 0 0 0 1px var(--rule); }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 4px 0 14px; }
+  .stat b { display: block; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .stat span { font-size: 13px; color: var(--ink-2); }
+  .scroll { overflow-x: auto; }
+
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--rule-2); }
+  th:first-child, td:first-child { text-align: left; }
+  th { font-weight: 600; color: var(--ink-2); font-size: 13px; }
+  .match { color: var(--added); font-weight: 600; }
+  details { margin-top: 12px; font-size: 13.5px; color: var(--ink-2); }
+  details summary { cursor: pointer; }
+  details table { margin-top: 8px; }
+
   .tip {
-    position: fixed; pointer-events: none; background: var(--ink); color: var(--surface);
-    padding: 6px 9px; border-radius: 6px; font-size: 12px; opacity: 0; transition: opacity .08s;
-    white-space: nowrap; z-index: 10;
+    position: fixed; pointer-events: none; z-index: 20; background: var(--tip-bg); color: var(--tip-ink);
+    border-radius: 8px; padding: 8px 10px; font-size: 12.5px; line-height: 1.45; opacity: 0;
+    transition: opacity .08s; min-width: 120px; box-shadow: 0 6px 24px rgba(0,0,0,.18);
   }
-  footer { margin-top: 28px; color: var(--ink-3); font-size: 12px; }
-  footer a { color: inherit; }
+  .tip .row { display: flex; justify-content: space-between; gap: 14px; }
+  .tip .k { display: inline-flex; align-items: center; gap: 6px; }
+
+  footer { padding: 64px 0 48px; font-size: 13px; color: var(--ink-3); }
+  @media (max-width: 860px) {
+    .stage { grid-template-columns: 1fr; padding: 16px; }
+    .card { padding: 16px; }
+    .wrap { padding: 0 16px; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>SDG 4 Vintage Explorer</h1>
-  <p class="lede">Which countries have a value for each SDG 4 indicator, for which reference years, in each
-    data release — and which country-years appeared or disappeared since the
-    previous release.</p>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="https://github.com/EllenSyuu/SDG">sdg4vintage</a>
+    <nav>
+      <a class="btn" href="https://github.com/EllenSyuu/SDG">Source on GitHub</a>
+      <button class="btn" id="theme" type="button" aria-label="Switch colour theme">Dark theme</button>
+    </nav>
+  </header>
 
-  <div class="controls">
-    <label>Indicator <select id="code"></select></label>
-    <label>Release <select id="release"></select></label>
-    <div>
-      <div style="font-size:12px;color:var(--ink-2);font-weight:600;margin-bottom:4px">View</div>
-      <div class="seg" role="group" aria-label="View">
-        <button type="button" data-mode="report" aria-pressed="true">Reporting</button>
-        <button type="button" data-mode="diff" aria-pressed="false">Change vs previous</button>
+  <div class="hero">
+    <h1>Every release rewrites the past.</h1>
+    <p class="lede">Statistics are republished every year. Each release adds the newest year, fills in
+      years that arrived late, withdraws some values and revises others. This explorer shows those
+      changes, one release on top of the next.</p>
+    <p class="note">Synthetic demo data from <code>sdg4v demo</code>. Country codes are placeholders.</p>
+
+    <div class="pills" id="pills" role="group" aria-label="Indicator"></div>
+
+    <div class="stage">
+      <div>
+        <h2 id="curve-title">Countries with a value, by reference year</h2>
+        <p class="sub">One line per release. Hover to compare releases for a year.</p>
+        <div class="legend" id="curve-legend"></div>
+        <div id="curve"></div>
+      </div>
+      <div>
+        <h2 id="drift-title">One reference year, as each release saw it</h2>
+        <div class="yearpick"><span id="year-label"></span><input id="year" type="range" aria-label="Reference year"></div>
+        <div id="drift"></div>
       </div>
     </div>
+    <details><summary>Show the curve data as a table</summary><div class="scroll" id="curve-table"></div></details>
   </div>
 
-  <div class="stats" id="stats"></div>
-  <div class="legend" id="legend"></div>
-  <div class="chart" id="chart"></div>
-  <div class="tip" id="tip" role="status"></div>
+  <section>
+    <div class="head">
+      <h2>Who reported which years</h2>
+      <p>Each row is a country, each column a reference year. Switch to the change view to see what a
+        release added or withdrew compared with the one before.</p>
+    </div>
+    <div class="card">
+      <div class="controls">
+        <label>Release <input id="release" type="range" min="0" step="1" aria-label="Release"> <b id="release-label"></b></label>
+        <div class="seg" role="group" aria-label="View">
+          <button type="button" data-mode="report" aria-pressed="true">Reported</button>
+          <button type="button" data-mode="diff" aria-pressed="false">Change since previous</button>
+        </div>
+      </div>
+      <div class="stats" id="matrix-stats"></div>
+      <div class="legend" id="matrix-legend"></div>
+      <div class="scroll" id="matrix"></div>
+    </div>
+  </section>
 
-  <footer>Built with <a href="https://github.com/EllenSyuu/SDG">sdg4vintage</a>. The hosted version shows
-    synthetic demo data generated by <code>sdg4v demo</code>; country codes are placeholders. Rows are sorted by
-    number of reported years.</footer>
-</main>
+  <section>
+    <div class="head">
+      <h2>What changed between releases</h2>
+      <p>Net country-years added (blue) or withdrawn (orange) for reference years that were already
+        due, across every indicator.</p>
+    </div>
+    <div class="card">
+      <div class="controls"><div class="seg" id="transition" role="group" aria-label="Release transition"></div></div>
+      <div class="scroll" id="flows"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>How often published values move</h2>
+      <p>Share of values, published in two consecutive releases, that changed by more than 0.001.</p>
+    </div>
+    <div class="card"><div class="legend" id="rev-legend"></div><div id="revisions"></div></div>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2>Checked against a known answer</h2>
+      <p>The demo data come from a generator that records every event it plants. The table puts the
+        pipeline's counts next to that record; the test suite fails if they ever differ.</p>
+    </div>
+    <div class="card scroll" id="ledger"></div>
+  </section>
+
+  <footer>Built with <a href="https://github.com/EllenSyuu/SDG">sdg4vintage</a> by Ziyi Zhou. MIT licence.</footer>
+</div>
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
 <script>
 (async function () {
-  const data = await (await fetch("data.json")).json();
+  const D = await (await fetch("data.json")).json();
   const $ = (id) => document.getElementById(id);
-  const years = [];
-  for (let y = data.reference_start; y <= data.reference_end; y++) years.push(y);
-  const lastEligible = (r) => Math.min(data.eligibility === "strict" ? r - 1 : r, data.reference_end);
-  const has = (mask, y) => mask !== undefined && Math.floor(mask / 2 ** (y - data.reference_start)) % 2 === 1;
-  const state = { code: "4.1.4", release: String(Math.max(...data.releases)), mode: "report" };
+  const NS = "http://www.w3.org/2000/svg";
+  const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+  const fmt = (n) => Number(n).toLocaleString("en-US");
+  const R = D.releases;
+  const rampVar = (i) => `var(--r${Math.max(1, 4 - (R.length - 1 - i))})`;
+  const lastEligible = (r) => Math.min(D.eligibility === "strict" ? r - 1 : r, D.reference_end);
+  const years = []; for (let y = D.reference_start; y <= D.reference_end; y++) years.push(y);
+  const names = Object.fromEntries(D.indicators.map((i) => [i.code, i.name]));
+  const state = { code: D.indicators.some((i) => i.code === "4.c.1") ? "4.c.1" : D.indicators[0].code,
+                  hidden: new Set(), year: R[0] - 1, release: R.length - 1, mode: "report", transition: R.length - 2 };
+  let firstDraw = true;
 
-  $("code").innerHTML = data.indicators
-    .map((i) => `<option value="${i.code}">${i.code} — ${i.name}</option>`).join("");
-  $("release").innerHTML = data.releases.slice().reverse()
-    .map((r) => `<option value="${r}">${r}</option>`).join("");
-  $("code").value = state.code; $("release").value = state.release;
-  $("code").onchange = (e) => { state.code = e.target.value; draw(); };
-  $("release").onchange = (e) => { state.release = e.target.value; draw(); };
-  document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => {
+  // ------------------------------------------------------------- theme
+  const themeBtn = $("theme");
+  const isDark = () => document.documentElement.dataset.theme
+    ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  const syncThemeLabel = () => themeBtn.textContent = isDark() ? "Light theme" : "Dark theme";
+  themeBtn.onclick = () => { document.documentElement.dataset.theme = isDark() ? "light" : "dark"; syncThemeLabel(); };
+  syncThemeLabel();
+
+  // ------------------------------------------------------------- tooltip
+  const tip = $("tip");
+  const showTip = (e, html, left = false) => {
+    tip.innerHTML = html; tip.style.opacity = 1;
+    const flip = left || e.clientX + 14 + tip.offsetWidth > innerWidth - 8;
+    const x = Math.max(8, flip ? e.clientX - tip.offsetWidth - 14 : e.clientX + 14);
+    const y = e.clientY + 14 + tip.offsetHeight > innerHeight ? e.clientY - tip.offsetHeight - 10 : e.clientY + 14;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  };
+  const hideTip = () => tip.style.opacity = 0;
+
+  const el = (tag, attrs = {}, parent) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (parent) parent.appendChild(n);
+    return n;
+  };
+  const niceStep = (span, n) => {
+    const raw = span / n, p = 10 ** Math.floor(Math.log10(raw)), f = raw / p;
+    return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+  };
+  const niceMax = (v, n = 4) => { const s = niceStep(Math.max(v, 1), n); return Math.ceil(v / s) * s; };
+  const ticks = (max, n = 4) => { const s = niceStep(max, n), out = []; for (let v = 0; v <= max + 1e-9; v += s) out.push(v); return out; };
+
+  // ------------------------------------------------------------- data access
+  const curve = (code, rel) => D.curves.filter((c) => c[0] === code && c[1] === rel).map((c) => [c[2], c[3]]);
+  const masks = (code, rel) => ((D.masks[code] || {})[rel]) || {};
+  const has = (m, y) => m !== undefined && Math.floor(m / 2 ** (y - D.reference_start)) % 2 === 1;
+
+  // ------------------------------------------------------------- indicator pills
+  $("pills").innerHTML = D.indicators.map((i) =>
+    `<button class="pill" type="button" data-code="${esc(i.code)}" aria-pressed="${i.code === state.code}">${esc(i.code)} ${esc(i.name)}</button>`).join("");
+  $("pills").onclick = (e) => {
+    const b = e.target.closest(".pill"); if (!b) return;
+    state.code = b.dataset.code;
+    document.querySelectorAll(".pill").forEach((p) => p.setAttribute("aria-pressed", p === b));
+    drawAll();
+  };
+
+  // ------------------------------------------------------------- hero: vintage curves
+  function drawCurves() {
+    const W = 720, H = 360, m = { l: 40, r: 16, t: 10, b: 30 };
+    const data = R.map((r, i) => ({ r, i, pts: curve(state.code, r) }));
+    const ymax = niceMax(Math.max(1, ...data.flatMap((d) => d.pts.map((p) => p[1]))) * 1.08);
+    const x0 = years[0], x1 = Math.max(...data.flatMap((d) => d.pts.map((p) => p[0])));
+    const X = (y) => m.l + (y - x0) / (x1 - x0) * (W - m.l - m.r);
+    const Y = (v) => H - m.b - v / ymax * (H - m.t - m.b);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img",
+      "aria-label": `Countries with a value per reference year for ${state.code}, one line per release` });
+    const g = el("g", { class: "grid" }, svg);
+    for (const v of ticks(ymax)) {
+      el("line", { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v) }, g);
+      el("text", { x: m.l - 8, y: Y(v) + 4, "text-anchor": "end" }, svg).textContent = fmt(Math.round(v));
+    }
+    for (let y = x0; y <= x1; y += 2) el("text", { x: X(y), y: H - 8, "text-anchor": "middle" }, svg).textContent = y;
+    data.forEach((d) => {
+      if (state.hidden.has(d.r) || !d.pts.length) return;
+      const latest = d.i === R.length - 1;
+      const path = el("path", {
+        d: d.pts.map((p, k) => `${k ? "L" : "M"}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(""),
+        fill: "none", stroke: rampVar(d.i), "stroke-width": latest ? 3 : 2, "stroke-linejoin": "round", "stroke-linecap": "round",
+      }, svg);
+      const end = d.pts[d.pts.length - 1];
+      el("circle", { cx: X(end[0]), cy: Y(end[1]), r: latest ? 4.5 : 3.5, fill: rampVar(d.i), stroke: "var(--panel)", "stroke-width": 2 }, svg);
+      if (firstDraw) {
+        const len = path.getTotalLength ? 2000 : 0;
+        path.style.setProperty("--len", len); path.classList.add("draw");
+        path.style.animationDelay = `${d.i * 260}ms`;
+      }
+    });
+    const cross = el("line", { class: "crosshair", y1: m.t, y2: H - m.b, opacity: 0 }, svg);
+    const hit = el("rect", { x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: "transparent" }, svg);
+    hit.addEventListener("mousemove", (e) => {
+      const box = svg.getBoundingClientRect();
+      const px = (e.clientX - box.left) / box.width * W;
+      const yr = Math.max(x0, Math.min(x1, Math.round(x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0))));
+      cross.setAttribute("x1", X(yr)); cross.setAttribute("x2", X(yr)); cross.setAttribute("opacity", 1);
+      const rows = data.filter((d) => !state.hidden.has(d.r)).slice().reverse().map((d) => {
+        const p = d.pts.find((q) => q[0] === yr);
+        return `<div class="row"><span class="k"><span class="sw" style="background:${rampVar(d.i)}"></span>${d.r} release</span><b>${p ? p[1] : "not yet due"}</b></div>`;
+      }).join("");
+      showTip(e, `<div style="margin-bottom:4px"><b>Reference year ${yr}</b></div>${rows}`, px > W * 0.5);
+    });
+    hit.addEventListener("mouseleave", () => { hideTip(); cross.setAttribute("opacity", 0); });
+    hit.addEventListener("click", (e) => {
+      const box = svg.getBoundingClientRect();
+      const yr = Math.round(x0 + ((e.clientX - box.left) / box.width * W - m.l) / (W - m.l - m.r) * (x1 - x0));
+      if (yr <= lastEligible(R[0])) { state.year = yr; $("year").value = yr; drawDrift(); }
+    });
+    $("curve").replaceChildren(svg);
+    $("curve-title").textContent = `${state.code} ${names[state.code]}: countries with a value, by reference year`;
+    $("curve-legend").innerHTML = R.map((r, i) =>
+      `<button type="button" data-r="${r}" aria-pressed="${!state.hidden.has(r)}"><span class="sw" style="background:${rampVar(i)}"></span>${r} release</button>`).join("");
+    // table view
+    $("curve-table").innerHTML = `<table><thead><tr><th>Reference year</th>${R.map((r) => `<th>${r}</th>`).join("")}</tr></thead><tbody>${
+      years.filter((y) => y <= x1).map((y) => `<tr><td>${y}</td>${data.map((d) => { const p = d.pts.find((q) => q[0] === y); return `<td>${p ? p[1] : "–"}</td>`; }).join("")}</tr>`).join("")}</tbody></table>`;
+  }
+  $("curve-legend").onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const r = Number(b.dataset.r);
+    if (state.hidden.has(r)) state.hidden.delete(r); else if (state.hidden.size < R.length - 1) state.hidden.add(r);
+    drawCurves();
+  };
+
+  // ------------------------------------------------------------- hero: one year across releases
+  const yearInput = $("year");
+  yearInput.min = D.reference_start; yearInput.max = lastEligible(R[0]); yearInput.value = state.year;
+  yearInput.oninput = () => { state.year = Number(yearInput.value); drawDrift(); };
+  function drawDrift() {
+    $("year-label").textContent = state.year;
+    const vals = R.map((r) => (curve(state.code, r).find((p) => p[0] === state.year) || [0, 0])[1]);
+    const W = 300, H = 300, m = { l: 8, r: 8, t: 22, b: 30 };
+    const ymax = niceMax(Math.max(1, ...vals) * 1.1);
+    const bw = (W - m.l - m.r) / R.length;
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img",
+      "aria-label": `Countries with a value for ${state.year} in each release: ${vals.join(", ")}` });
+    el("line", { x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b, stroke: "var(--rule)" }, svg);
+    vals.forEach((v, i) => {
+      const h = v / ymax * (H - m.t - m.b), x = m.l + i * bw + bw * 0.18, w = bw * 0.64;
+      el("rect", { x, y: H - m.b - h, width: w, height: Math.max(h, 0), rx: 4, fill: rampVar(i) }, svg);
+      el("text", { x: x + w / 2, y: H - m.b - h - 7, "text-anchor": "middle", style: "fill:var(--ink);font-weight:600;font-size:13px" }, svg).textContent = v;
+      el("text", { x: x + w / 2, y: H - 10, "text-anchor": "middle" }, svg).textContent = R[i];
+      if (i) {
+        const d = v - vals[i - 1];
+        if (d) el("text", { x: x + w / 2, y: H - m.b - h - 22, "text-anchor": "middle", style: `fill:${d > 0 ? "var(--added)" : "var(--dropped)"};font-size:11px` }, svg).textContent = (d > 0 ? "+" : "−") + Math.abs(d);
+      }
+    });
+    $("drift").replaceChildren(svg);
+    $("drift-title").textContent = `Reference year ${state.year}, as each release saw it`;
+  }
+
+  // ------------------------------------------------------------- matrix
+  const relInput = $("release");
+  relInput.max = R.length - 1; relInput.value = state.release;
+  relInput.oninput = () => { state.release = Number(relInput.value); drawMatrix(); };
+  document.querySelectorAll(".seg button[data-mode]").forEach((b) => b.onclick = () => {
     state.mode = b.dataset.mode;
-    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-pressed", x === b));
-    draw();
+    document.querySelectorAll(".seg button[data-mode]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    drawMatrix();
   });
-
-  function draw() {
-    const r = Number(state.release);
-    const prevIdx = data.releases.indexOf(r) - 1;
-    const prev = prevIdx >= 0 ? data.releases[prevIdx] : null;
+  function drawMatrix() {
+    const r = R[state.release], prev = state.release > 0 ? R[state.release - 1] : null;
+    $("release-label").textContent = r;
     const diff = state.mode === "diff" && prev !== null;
-    const cur = (data.masks[state.code] || {})[r] || {};
-    const old = prev ? ((data.masks[state.code] || {})[prev] || {}) : {};
+    const cur = masks(state.code, r), old = prev ? masks(state.code, prev) : {};
     const countries = [...new Set([...Object.keys(cur), ...(diff ? Object.keys(old) : [])])];
-    const count = (m) => years.filter((y) => has(m, y)).length;
+    const count = (mk) => years.filter((y) => has(mk, y)).length;
     countries.sort((a, b) => count(cur[b]) - count(cur[a]) || a.localeCompare(b));
-
-    let added = 0, dropped = 0, cells = 0;
     const status = (c, y) => {
       if (y > lastEligible(r)) return "na";
       const now = has(cur[c], y);
@@ -137,53 +403,137 @@
       const was = has(old[c], y);
       return now && was ? "rep" : now ? "add" : was ? "drop" : "none";
     };
+    let added = 0, dropped = 0, cells = 0;
     countries.forEach((c) => years.forEach((y) => {
-      const s = status(c, y);
-      if (s === "add") added++; if (s === "drop") dropped++; if (s === "rep" || s === "add" || s === "new") cells++;
+      const s = status(c, y); if (s === "add") added++; if (s === "drop") dropped++; if (["rep", "add", "new"].includes(s)) cells++;
     }));
-
-    const name = data.indicators.find((i) => i.code === state.code).name;
-    $("stats").innerHTML = [
-      [Object.keys(cur).length, `countries with any value, ${data.reference_start}–${lastEligible(r)}`],
-      [cells, "country-years reported"],
-      ...(diff ? [[`+${added}`, `backfilled since ${prev}`], [`−${dropped}`, `withdrawn since ${prev}`]] : []),
-    ].map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
-
-    const legend = diff
-      ? [["--reported", "In both releases"], ["--added", "Added (backfill)"], ["--dropped", "Withdrawn"], ["--empty", "No value"]]
-      : [["--reported", "Value reported"], ["--empty", "No value"]];
-    $("legend").innerHTML = legend.map(([v, l]) => `<span><i style="background:var(${v})"></i>${l}</span>`).join("")
-      + `<span style="color:var(--ink-3)">${state.code} ${name} · ${r} release · blank columns not yet eligible</span>`;
-
-    const cw = 26, ch = 9, gap = 1, left = 44, top = 22;
-    const W = left + years.length * cw, H = top + countries.length * (ch + gap) + 4;
-    const color = { rep: "var(--reported)", add: "var(--added)", drop: "var(--dropped)", new: "var(--reported)", none: "var(--empty)" };
-    let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${state.code} reporting matrix">`;
-    years.forEach((y, j) => { if (y % 2 === 0) svg += `<text x="${left + j * cw + cw / 2}" y="12" text-anchor="middle">${y}</text>`; });
+    $("matrix-stats").innerHTML = [[fmt(Object.keys(cur).length), "countries with any value"], [fmt(cells), "country-years reported"],
+      ...(diff ? [[`+${fmt(added)}`, `added since ${prev}`], [`−${fmt(dropped)}`, `withdrawn since ${prev}`]] : [])]
+      .map(([v, l]) => `<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
+    const leg = diff ? [["--r3", "In both releases"], ["--added", "Added"], ["--dropped", "Withdrawn"], ["--empty", "No value"]]
+                     : [["--r3", "Value reported"], ["--empty", "No value"]];
+    $("matrix-legend").innerHTML = leg.map(([v, l]) => `<span class="k" style="display:inline-flex;gap:6px;align-items:center"><span class="sq" style="background:var(${v})"></span>${l}</span>`).join("")
+      + `<span>Blank columns are not yet due in ${r}.</span>`;
+    const cw = 30, ch = 11, gap = 2, left = 46, top = 20;
+    const W = left + years.length * cw, H = top + countries.length * (ch + gap);
+    const fill = { rep: "var(--r3)", new: "var(--r3)", add: "var(--added)", drop: "var(--dropped)", none: "var(--empty)" };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: W, height: H, style: `width:${W}px;max-width:none`, role: "img",
+      "aria-label": `Reporting matrix for ${state.code}, ${r} release` });
+    years.forEach((y, j) => { if (y % 2 === 0) el("text", { x: left + j * cw + cw / 2, y: 12, "text-anchor": "middle" }, svg).textContent = y; });
     countries.forEach((c, i) => {
       const yy = top + i * (ch + gap);
-      svg += `<text x="${left - 6}" y="${yy + ch - 1}" text-anchor="end">${c}</text>`;
+      el("text", { x: left - 8, y: yy + ch - 1.5, "text-anchor": "end", style: "font-size:10px" }, svg).textContent = c;
       years.forEach((y, j) => {
-        const s = status(c, y);
-        if (s === "na") return;
-        svg += `<rect x="${left + j * cw + 1}" y="${yy}" width="${cw - 2}" height="${ch}" rx="1.5" fill="${color[s]}" data-c="${c}" data-y="${y}" data-s="${s}"/>`;
+        const s = status(c, y); if (s === "na") return;
+        el("rect", { x: left + j * cw + 1, y: yy, width: cw - 2, height: ch, rx: 2, fill: fill[s], "data-c": c, "data-y": y, "data-s": s }, svg);
       });
     });
-    $("chart").innerHTML = svg + "</svg>";
+    const label = { rep: "reported", new: "reported (newly due)", add: `added since ${prev}`, drop: `withdrawn since ${prev}`, none: "no value" };
+    svg.addEventListener("mousemove", (e) => {
+      const t = e.target.closest("rect"); if (!t) return hideTip();
+      showTip(e, `<b>${t.dataset.c}</b> · ${t.dataset.y}<br>${label[t.dataset.s]}`);
+    });
+    svg.addEventListener("mouseleave", hideTip);
+    $("matrix").replaceChildren(svg);
   }
 
-  const label = { rep: "reported", add: "added since previous release", drop: "withdrawn since previous release", new: "reported (newly eligible year)", none: "no value" };
-  const tip = $("tip");
-  $("chart").addEventListener("mousemove", (e) => {
-    const t = e.target.closest("rect");
-    if (!t) { tip.style.opacity = 0; return; }
-    tip.textContent = `${t.dataset.c} · ${t.dataset.y} · ${label[t.dataset.s]}`;
-    tip.style.left = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8) + "px";
-    tip.style.top = e.clientY + 12 + "px";
-    tip.style.opacity = 1;
-  });
-  $("chart").addEventListener("mouseleave", () => tip.style.opacity = 0);
-  draw();
+  // ------------------------------------------------------------- flows heat strip
+  const pairs = R.slice(0, -1).map((r, i) => [r, R[i + 1]]);
+  $("transition").innerHTML = pairs.map(([a, b], i) => `<button type="button" data-i="${i}" aria-pressed="${i === state.transition}">${a} to ${b}</button>`).join("");
+  $("transition").onclick = (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    state.transition = Number(b.dataset.i);
+    document.querySelectorAll("#transition button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    drawFlows();
+  };
+  function mix(a, b, t) {
+    const p = (h) => [1, 3, 5].map((k) => parseInt(h.slice(k, k + 2), 16));
+    const A = p(a), B = p(b);
+    return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * t)).join(",")})`;
+  }
+  function drawFlows() {
+    if (!D.flows) return;
+    const from = pairs[state.transition][0];
+    const rows = D.flows.filter((f) => f[1] === from);
+    const codes = D.indicators.map((i) => i.code);
+    const ys = years.filter((y) => y <= lastEligible(from));
+    const lim = Math.max(1, ...D.flows.map((f) => Math.abs(f[3] - f[4])));
+    const neutral = css("--neutral"), blue = css("--r3"), orange = css("--dropped");
+    const cw = 36, ch = 26, left = 330, top = 22;
+    const W = left + ys.length * cw + 8, H = top + codes.length * (ch + 3);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, style: `min-width:${Math.min(W, 640)}px`, role: "img",
+      "aria-label": `Net country-years added or withdrawn between ${from} and ${pairs[state.transition][1]}` });
+    ys.forEach((y, j) => { if (y % 2 === 0) el("text", { x: left + j * cw + cw / 2, y: 12, "text-anchor": "middle" }, svg).textContent = y; });
+    codes.forEach((c, i) => {
+      const yy = top + i * (ch + 3);
+      el("text", { x: left - 12, y: yy + ch / 2 + 4, "text-anchor": "end", style: "fill:var(--ink-2);font-size:12px" }, svg).textContent = `${c} ${names[c]}`;
+      ys.forEach((y, j) => {
+        const f = rows.find((q) => q[0] === c && q[2] === y);
+        const add = f ? f[3] : 0, drop = f ? f[4] : 0, net = add - drop;
+        const t = Math.min(1, Math.abs(net) / lim) ** 0.6;
+        el("rect", { x: left + j * cw + 1, y: yy, width: cw - 2, height: ch, rx: 3,
+          fill: net === 0 ? neutral : mix(neutral, net > 0 ? blue : orange, 0.15 + 0.85 * t),
+          "data-tip": `<b>${esc(c)} ${esc(names[c])}</b> · ${y}<div class="row"><span>added</span><b>${add}</b></div><div class="row"><span>withdrawn</span><b>${drop}</b></div>` }, svg);
+      });
+    });
+    svg.addEventListener("mousemove", (e) => { const t = e.target.closest("rect"); if (!t) return hideTip(); showTip(e, t.dataset.tip); });
+    svg.addEventListener("mouseleave", hideTip);
+    $("flows").replaceChildren(svg);
+  }
+
+  // ------------------------------------------------------------- revisions dot plot
+  function drawRevisions() {
+    if (!D.revisions) return;
+    const codes = D.indicators.map((i) => i.code);
+    const W = 880, rowH = 30, m = { l: 330, r: 24, t: 8, b: 30 }, H = m.t + codes.length * rowH + m.b;
+    const xmax = Math.min(100, niceMax(Math.max(5, ...D.revisions.map((r) => r[3] * 100)) * 1.1));
+    const X = (v) => m.l + v / xmax * (W - m.l - m.r);
+    const slotColor = ["var(--r2)", "var(--r3)", "var(--r4)"];
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Share of published values revised in the next release, by indicator" });
+    for (const v of ticks(xmax)) {
+      el("line", { x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, stroke: "var(--rule-2)" }, svg);
+      el("text", { x: X(v), y: H - 10, "text-anchor": "middle" }, svg).textContent = `${Math.round(v)}%`;
+    }
+    codes.forEach((c, i) => {
+      const y = m.t + i * rowH + rowH / 2;
+      el("text", { x: m.l - 12, y: y + 4, "text-anchor": "end", style: "fill:var(--ink-2);font-size:12px" }, svg).textContent = `${c} ${names[c]}`;
+      const pts = pairs.map(([a], s) => [s, D.revisions.find((r) => r[0] === c && r[1] === a)]).filter((p) => p[1]);
+      if (pts.length > 1) {
+        const xs = pts.map((p) => X(p[1][3] * 100));
+        el("line", { x1: Math.min(...xs), x2: Math.max(...xs), y1: y, y2: y, stroke: "var(--rule)", "stroke-width": 2 }, svg);
+      }
+      pts.forEach(([s, r]) => el("circle", { cx: X(r[3] * 100), cy: y, r: 6, fill: slotColor[s % 3], stroke: "var(--panel)", "stroke-width": 2,
+        "data-tip": `<b>${esc(c)} ${esc(names[c])}</b><br>${pairs[s][0]} to ${pairs[s][1]}<div class="row"><span>revised</span><b>${(r[3] * 100).toFixed(1)}%</b></div><div class="row"><span>pairs compared</span><b>${fmt(r[2])}</b></div>` }, svg));
+    });
+    svg.addEventListener("mousemove", (e) => { const t = e.target.closest("circle"); if (!t) return hideTip(); showTip(e, t.dataset.tip); });
+    svg.addEventListener("mouseleave", hideTip);
+    $("revisions").replaceChildren(svg);
+    $("rev-legend").innerHTML = pairs.map(([a, b], s) => `<span class="k" style="display:inline-flex;gap:6px;align-items:center"><span class="sq" style="border-radius:50%;background:${slotColor[s % 3]}"></span>${a} to ${b}</span>`).join("");
+  }
+
+  // ------------------------------------------------------------- ledger
+  function drawLedger() {
+    if (!D.ledger) return;
+    const planted = D.planted || [];
+    const same = (l) => { const p = planted.find((q) => q[0] === l[0]); return p && p.slice(2).every((v, k) => v === l[k + 2]); };
+    const head = planted.length
+      ? "<th>Retained</th><th>Backfilled</th><th>Withdrawn</th><th>Revised</th><th>Planted by the generator</th>"
+      : "<th>Retained</th><th>Backfilled</th><th>Withdrawn</th><th>Revised</th>";
+    $("ledger").innerHTML = `<table><thead><tr><th>Release transition</th>${head}</tr></thead><tbody>${
+      D.ledger.map((l) => {
+        const p = planted.find((q) => q[0] === l[0]);
+        const check = !planted.length ? "" : same(l)
+          ? `<td class="match">Identical (${p.slice(3).map(fmt).join(" / ")})</td>`
+          : `<td style="color:var(--dropped);font-weight:600">Differs</td>`;
+        return `<tr><td>${l[0]} to ${l[1]}</td><td>${fmt(l[2])}</td><td>${fmt(l[3])}</td><td>${fmt(l[4])}</td><td>${fmt(l[5])}</td>${check}</tr>`;
+      }).join("")}</tbody></table>`;
+  }
+
+  function drawAll() { drawCurves(); drawDrift(); drawMatrix(); }
+  drawAll(); firstDraw = false;
+  drawFlows(); drawRevisions(); drawLedger();
+  new MutationObserver(() => { drawFlows(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { syncThemeLabel(); drawFlows(); });
 })();
 </script>
 </body>

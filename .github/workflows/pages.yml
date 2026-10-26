@@ -28,10 +28,7 @@ jobs:
           cache: pip
       - run: python -m pip install -e .
       - name: Build explorer from synthetic data
-        run: |
-          sdg4v demo
-          sdg4v explorer --out site/data.json
-          cp docs/explorer/index.html site/
+        run: python scripts/build_site.py site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

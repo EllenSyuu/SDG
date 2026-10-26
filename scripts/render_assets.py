@@ -48,15 +48,17 @@ def main() -> None:
 
     planted = pl.DataFrame([vars(t) for t in truth.transitions])
     IMG.mkdir(parents=True, exist_ok=True)
-    for old in IMG.glob("*.png"):
-        old.unlink()
     for theme in ("light", "dark"):
         pipeline.make_figures(tables, taxonomy, settings, theme=theme, suffix=f"-{theme}")
         plots.set_theme(theme)
         plots.ground_truth(tables["series_transitions"], planted, IMG / f"ground_truth-{theme}.png")
+        names = {i.code: i.name for i in taxonomy.indicators}
+        plots.hero_animation(
+            tables["vintage_curves"], names, pipeline.HERO_CODE, IMG / f"hero-{theme}.gif"
+        )
     plots.set_theme("light")
     plots.social_card(tables["vintage_curves"], pipeline.HERO_CODE, IMG / "social-preview.png")
-    for path in sorted(IMG.glob("*.png")):
+    for path in sorted([*IMG.glob("*.png"), *IMG.glob("*.gif")]):
         print(f"{path.relative_to(ROOT)}  {path.stat().st_size / 1024:.0f} KB")
 
 
