@@ -22,6 +22,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - run: python -m pip install -e ".[dev]"
+      - name: Repository policy (single main branch, no Dependabot version updates)
+        run: test ! -e .github/dependabot.yml && test ! -e .github/dependabot.yaml
       - name: Lint
         run: |
           ruff check src tests scripts
